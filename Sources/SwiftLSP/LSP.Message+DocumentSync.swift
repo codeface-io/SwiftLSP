@@ -1,3 +1,5 @@
+import FoundationToolz
+
 public extension LSP.Message.Notification
 {
     // textDocument LSP type: TextDocumentItem

@@ -1,3 +1,4 @@
+import FoundationToolz
 import Foundation
 
 public extension LSP.Message.Request
