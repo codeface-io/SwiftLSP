@@ -6,7 +6,7 @@
         "repositoryURL": "https://github.com/flowtoolz/FoundationToolz.git",
         "state": {
           "branch": "master",
-          "revision": "43becb5d914a0d30db88277b51d5f8109fd43eb6",
+          "revision": "e33bbb77c675fa1d7317d869683ccab2ff14b426",
           "version": null
         }
       },
@@ -24,7 +24,7 @@
         "repositoryURL": "https://github.com/flowtoolz/SwiftyToolz.git",
         "state": {
           "branch": "master",
-          "revision": "f435352a6f15b776bef0def970b0d3776c104779",
+          "revision": "2f44332e2ce4ef88c3af0ad4ccfcdd614cffc1e3",
           "version": null
         }
       }

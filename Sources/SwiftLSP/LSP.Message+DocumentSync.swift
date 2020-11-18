@@ -1,4 +1,4 @@
-import FoundationToolz
+import SwiftyToolz
 
 public extension LSP.Message.Notification
 {
