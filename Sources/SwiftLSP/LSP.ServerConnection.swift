@@ -4,7 +4,6 @@ import SwiftyToolz
 
 extension LSP.ServerConnection
 {
-    // TODO: use PromiseKit to make these simple mappings easier
     public func request<Value: Decodable>(_ req: LSP.Message.Request,
                                           as type: Value.Type,
                                           handleResult: @escaping (Result<Value, ResponseError>) -> Void) throws
@@ -69,7 +68,7 @@ extension LSP
             
             do
             {
-                try connection.send(.request(request))
+                try connection.sendToServer(.request(request))
             }
             catch
             {
@@ -150,7 +149,7 @@ extension LSP
         
         public func notify(_ notification: Message.Notification) throws
         {
-            try connection.send(.notification(notification))
+            try connection.sendToServer(.notification(notification))
         }
         
         public var serverDidSendNotification: (Message.Notification) -> Void = { _ in }
