@@ -11,16 +11,16 @@ extension LSP
         
         public struct Response
         {
-            public init(id: NullableID, result: Result<JSON, Error>)
+            public init(id: NullableID, result: Result<JSON, LSPError>)
             {
                 self.id = id
                 self.result = result
             }
             
             public let id: NullableID
-            public let result: Result<JSON, Error>
+            public let result: Result<JSON, LSPError>
             
-            public struct Error: Swift.Error
+            public struct LSPError: Error
             {
                 public let code: Int
                 public let message: String

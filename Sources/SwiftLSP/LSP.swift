@@ -1,1 +1,1 @@
-public struct LSP {}
+public enum LSP {}

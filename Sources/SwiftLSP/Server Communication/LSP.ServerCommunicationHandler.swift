@@ -2,11 +2,11 @@ import FoundationToolz
 import Foundation
 import SwiftyToolz
 
-extension LSP.ServerConnection
+extension LSP.ServerCommunicationHandler
 {
     public func request<Value: Decodable>(_ req: LSP.Message.Request,
                                           as type: Value.Type,
-                                          handleResult: @escaping (Result<Value, ResponseError>) -> Void) throws
+                                          handleResult: @escaping (Result<Value, ErrorResponse>) -> Void) throws
     {
         try request(req)
         {
@@ -35,11 +35,11 @@ extension LSP.ServerConnection
 
 extension LSP
 {
-    public class ServerConnection
+    public class ServerCommunicationHandler
     {
         // MARK: - Initialize
         
-        public init(synchronousConnection connection: SynchronousLSPServerConnection)
+        public init(connection: LSPServerConnection)
         {
             self.connection = connection
             
@@ -59,7 +59,7 @@ extension LSP
             }
         }
         
-        // MARK: - Request and Response
+        // MARK: - Process Requests and Responses
         
         public func request(_ request: Message.Request,
                             handleResult: @escaping ResultHandler) throws
@@ -91,17 +91,17 @@ extension LSP
             case .null:
                 switch response.result
                 {
-                case .success(let result):
-                    log(error: "Did receive result without request ID: \(result)")
-                case .failure(let error):
-                    serverDidSendError(error)
+                case .success(let resultJSON):
+                    log(error: "Did receive result without request ID: \(resultJSON)")
+                case .failure(let errorResponse):
+                    serverDidSendErrorResponse(errorResponse)
                 }
             }
         }
         
-        public var serverDidSendError: (ResponseError) -> Void = { _ in }
+        public var serverDidSendErrorResponse: (ErrorResponse) -> Void = { _ in }
         
-        // MARK: - Result Handlers
+        // MARK: - Manage Result Handlers
         
         private func save(_ resultHandler: @escaping ResultHandler, for id: Message.ID)
         {
@@ -142,8 +142,8 @@ extension LSP
         private var resultHandlersString = [RequestIDString: ResultHandler]()
         private typealias RequestIDString = String
         
-        public typealias ResultHandler = (Result<JSON, ResponseError>) -> Void
-        public typealias ResponseError = Message.Response.Error
+        public typealias ResultHandler = (Result<JSON, ErrorResponse>) -> Void
+        public typealias ErrorResponse = Message.Response.LSPError
         
         // MARK: - Forward to Connection
         
@@ -155,6 +155,6 @@ extension LSP
         public var serverDidSendNotification: (Message.Notification) -> Void = { _ in }
         public var serverDidSendErrorOutput: (String) -> Void = { _ in }
         
-        private let connection: SynchronousLSPServerConnection
+        private let connection: LSPServerConnection
     }
 }
