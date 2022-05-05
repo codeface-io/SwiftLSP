@@ -3,7 +3,7 @@ import SwiftyToolz
 
 // MARK: - Readable Error
 
-extension LSP.Message.Response.LSPError: ReadableErrorConvertible
+extension LSP.Message.Response.ErrorResult: ReadableErrorConvertible
 {
     public var readableErrorMessage: String { description }
 }
@@ -18,7 +18,7 @@ extension LSP.Message: CustomStringConvertible
     }
 }
 
-extension LSP.Message.Response.LSPError: CustomStringConvertible
+extension LSP.Message.Response.ErrorResult: CustomStringConvertible
 {
     public var description: String
     {

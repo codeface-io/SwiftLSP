@@ -6,7 +6,7 @@ extension LSP.ServerCommunicationHandler
 {
     public func request<Value: Decodable>(_ req: LSP.Message.Request,
                                           as type: Value.Type,
-                                          handleResult: @escaping (Result<Value, ErrorResponse>) -> Void) throws
+                                          handleResult: @escaping (Result<Value, ErrorResult>) -> Void) throws
     {
         try request(req)
         {
@@ -91,15 +91,15 @@ extension LSP
             case .null:
                 switch response.result
                 {
-                case .success(let resultJSON):
-                    log(error: "Did receive result without request ID: \(resultJSON)")
-                case .failure(let errorResponse):
-                    serverDidSendErrorResponse(errorResponse)
+                case .success(let jsonResult):
+                    log(error: "Did receive result without request ID: \(jsonResult)")
+                case .failure(let errorResult):
+                    serverDidSendErrorResult(errorResult)
                 }
             }
         }
         
-        public var serverDidSendErrorResponse: (ErrorResponse) -> Void = { _ in }
+        public var serverDidSendErrorResult: (ErrorResult) -> Void = { _ in }
         
         // MARK: - Manage Result Handlers
         
@@ -142,8 +142,8 @@ extension LSP
         private var resultHandlersString = [RequestIDString: ResultHandler]()
         private typealias RequestIDString = String
         
-        public typealias ResultHandler = (Result<JSON, ErrorResponse>) -> Void
-        public typealias ErrorResponse = Message.Response.LSPError
+        public typealias ResultHandler = (Result<JSON, ErrorResult>) -> Void
+        public typealias ErrorResult = Message.Response.ErrorResult
         
         // MARK: - Forward to Connection
         

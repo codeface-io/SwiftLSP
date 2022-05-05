@@ -74,7 +74,7 @@ extension LSP.Message
     }
 }
 
-extension LSP.Message.Response.LSPError
+extension LSP.Message.Response.ErrorResult
 {
     init(_ json: JSON) throws
     {
