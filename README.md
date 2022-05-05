@@ -4,7 +4,7 @@
 
 * Extracting LSP Packets from a data stream
 * Representing and working with LSP messages
-* Matching response messages to request messages
+* Matching response messages with request messages
 * Creating specific LSP messages
 * Exchanging LSP Messages with an LSP Server
 
