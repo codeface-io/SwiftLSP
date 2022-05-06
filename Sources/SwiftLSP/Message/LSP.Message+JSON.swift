@@ -2,20 +2,26 @@ import SwiftyToolz
 
 extension LSP.Message
 {
-    public init(_ json: JSON) throws
+    /**
+     Creates an LSP message from JSON. Throws an error if the JSON does not form a valid LSP message according to the LSP specification.
+     */
+    public init(_ messageJSON: JSON) throws
     {
-        guard let nullableID = Self.getID(fromMessage: json) else
+        // TODO: this func is super critical and should be covered by multiple unit tests ensuring it throws errors exactly when the JSON does not comply to the LSP specification
+        
+        guard let nullableID = Self.getNullableID(fromMessage: messageJSON) else
         {
-            self = try .notification(.init(method: json.string("method"),
-                                           params: json.params))
+            // if it has no id, it must be a notification
+            self = try .notification(.init(method: messageJSON.string("method"),
+                                           params: messageJSON.params))
             return
         }
         
-        if let result = json.result // success response
+        if let result = messageJSON.result // success response
         {
             self = .response(.init(id: nullableID, result: .success(result)))
         }
-        else if let error = json.error  // error response
+        else if let error = messageJSON.error  // error response
         {
             self = .response(.init(id: nullableID,
                                    result: .failure(try .init(error))))
@@ -24,18 +30,18 @@ extension LSP.Message
         {
             guard case .value(let id) = nullableID else
             {
-                throw "Invalid message JSON: Either it's a response with no error and no result, or it's a request/notification with a <null> id"
+                throw "Invalid LSP message JSON: It contains neither an error nor a result (so it's not a response) and has a <null> id (so it's neither a notification nor a request)."
             }
             
             self = try .request(.init(id: id,
-                                      method: json.string("method"),
-                                      params: json.params))
+                                      method: messageJSON.string("method"),
+                                      params: messageJSON.params))
         }
     }
     
-    private static func getID(fromMessage json: JSON) -> NullableID?
+    private static func getNullableID(fromMessage messageJSON: JSON) -> NullableID?
     {
-        guard let idJSON = json.id else { return nil }
+        guard let idJSON = messageJSON.id else { return nil }
         
         switch idJSON
         {
@@ -60,10 +66,10 @@ extension LSP.Message
             dictionary["id"] = response.id.json
             switch response.result
             {
-            case .success(let resultJSON):
-                dictionary["result"] = resultJSON
-            case .failure(let error):
-                dictionary["error"] = error.json()
+            case .success(let jsonResult):
+                dictionary["result"] = jsonResult
+            case .failure(let errorResult):
+                dictionary["error"] = errorResult.json()
             }
         case .notification(let notification):
             dictionary["method"] = .string(notification.method)
