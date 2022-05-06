@@ -4,7 +4,7 @@ import PackageDescription
 
 let package = Package(
     name: "SwiftLSP",
-    platforms: [.iOS(.v11), .tvOS(.v11), .macOS(.v10_14)],
+    platforms: [.iOS(.v11), .tvOS(.v11), .macOS(.v10_15)],
     products: [
         .library(
             name: "SwiftLSP",
