@@ -5,29 +5,23 @@ import SwiftyToolz
 extension LSP.ServerCommunicationHandler
 {
     public func request<Value: Decodable>(_ req: LSP.Message.Request,
-                                          as type: Value.Type,
-                                          handleResult: @escaping (Result<Value, ErrorResult>) -> Void) throws
+                                          as type: Value.Type) async throws -> Result<Value, ErrorResult>
     {
-        try request(req)
+        let result = try await request(req)
+        
+        return result.flatMap
         {
-            result in
+            valueJSON in
             
-            switch result
+            do
             {
-            case .success(let valueJSON):
-                do
-                {
-                    handleResult(.success(try valueJSON.decode()))
-                }
-                catch
-                {
-                    let errorMessage = "Failed to decode result as \(Value.self)"
-                    handleResult(.failure(.init(code: -32603,
-                                                message: errorMessage,
-                                                data: valueJSON)))
-                }
-            case .failure(let error):
-                handleResult(.failure(error))
+                return .success(try valueJSON.decode())
+            }
+            catch
+            {
+                return .failure(.init(code: -32603,
+                                      message: "Failed to decode result as \(Value.self)",
+                                      data: valueJSON))
             }
         }
     }
@@ -61,19 +55,26 @@ extension LSP
         
         // MARK: - Process Requests and Responses
         
-        public func request(_ request: Message.Request,
-                            handleResult: @escaping ResultHandler) throws
+        public func request(_ request: Message.Request) async throws -> Result<JSON, ErrorResult>
         {
-            save(handleResult, for: request.id)
+            try await withCheckedThrowingContinuation
+            {
+                continuation in
+                
+                saveResultHandler(for: request.id)
+                {
+                    continuation.resume(with: .success($0))
+                }
             
-            do
-            {
-                try connection.sendToServer(.request(request))
-            }
-            catch
-            {
-                removeResultHandler(for: request.id)
-                throw error
+                do
+                {
+                    try connection.sendToServer(.request(request))
+                }
+                catch
+                {
+                    removeResultHandler(for: request.id)
+                    continuation.resume(throwing: error)
+                }
             }
         }
         
@@ -103,7 +104,8 @@ extension LSP
         
         // MARK: - Manage Result Handlers
         
-        private func save(_ resultHandler: @escaping ResultHandler, for id: Message.ID)
+        private func saveResultHandler(for id: Message.ID,
+                                       resultHandler: @escaping ResultHandler)
         {
             switch id
             {
