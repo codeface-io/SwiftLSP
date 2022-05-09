@@ -34,7 +34,7 @@ public extension LSP
         {
             do
             {
-                let message = try LSP.Message(data)
+                let message = try LSP.Message(LSP.Packet(parsing: data).content())
 
                 switch message
                 {
