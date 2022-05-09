@@ -14,7 +14,7 @@ public extension LSP
             
             webSocket.didReceiveData =
             {
-                [weak self] data in self?.process(packet: data)
+                [weak self] data in self?.process(data: data)
             }
             
             webSocket.didReceiveText =
@@ -30,12 +30,12 @@ public extension LSP
         
         // MARK: - Receive
         
-        private func process(packet: Data)
+        private func process(data: Data)
         {
             do
             {
-                let message = try LSP.Message(packet)
-                
+                let message = try LSP.Message(data)
+
                 switch message
                 {
                 case .request(_): throw "Received request from LSP server"
@@ -46,6 +46,7 @@ public extension LSP
             catch
             {
                 log(error)
+                log("Received data:\n" + (data.utf8String ?? "nil"))
             }
         }
         
