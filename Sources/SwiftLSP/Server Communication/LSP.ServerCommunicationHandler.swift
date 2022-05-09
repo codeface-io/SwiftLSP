@@ -93,14 +93,12 @@ extension LSP
                 switch response.result
                 {
                 case .success(let jsonResult):
-                    log(error: "Did receive result without request ID: \(jsonResult)")
+                    log(error: "Server did respond with value but no request ID: \(jsonResult)")
                 case .failure(let errorResult):
-                    serverDidSendErrorResult(errorResult)
+                    log(error: "Server did respond with error but no request ID: \(errorResult)")
                 }
             }
         }
-        
-        public var serverDidSendErrorResult: (ErrorResult) -> Void = { _ in }
         
         // MARK: - Manage Result Handlers
         
