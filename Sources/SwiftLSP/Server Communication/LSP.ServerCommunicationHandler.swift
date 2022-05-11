@@ -19,6 +19,7 @@ extension LSP.ServerCommunicationHandler
             }
             catch
             {
+                log(error)
                 return .failure(.init(code: -32603,
                                       message: "Failed to decode result as \(Value.self)",
                                       data: valueJSON))
