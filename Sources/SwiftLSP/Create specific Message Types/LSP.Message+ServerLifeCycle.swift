@@ -3,7 +3,9 @@ import SwiftyToolz
 
 public extension LSP.Message.Request
 {
-    // capabilities LSP type: ClientCapabilities
+    /**
+     https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#initialize
+     */
     static func initialize(folder: URL,
                            clientProcessID: Int,
                            capabilities: JSON = defaultClientCapabilities) -> Self
@@ -14,6 +16,9 @@ public extension LSP.Message.Request
                                    "capabilities": capabilities]))
     }
     
+    /**
+     https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#clientCapabilities
+     */
     static var defaultClientCapabilities: JSON
     {
         .dictionary(

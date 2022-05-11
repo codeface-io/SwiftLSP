@@ -1,3 +1,6 @@
+/**
+ https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#documentSymbol
+ */
 public struct LSPDocumentSymbol: Codable
 {
     public let name: String
