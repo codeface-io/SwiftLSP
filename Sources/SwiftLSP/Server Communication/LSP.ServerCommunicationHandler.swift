@@ -4,26 +4,17 @@ import SwiftyToolz
 
 extension LSP.ServerCommunicationHandler
 {
-    public func request<Value: Decodable>(_ req: LSP.Message.Request,
-                                          as type: Value.Type) async throws -> Result<Value, ErrorResult>
+    public func request<Value: Decodable>(_ req: LSP.Message.Request) async throws -> Value
     {
         let result = try await request(req)
         
-        return result.flatMap
+        switch result
         {
-            valueJSON in
-            
-            do
-            {
-                return .success(try valueJSON.decode())
-            }
-            catch
-            {
-                log(error)
-                return .failure(.init(code: -32603,
-                                      message: "Failed to decode result as \(Value.self)",
-                                      data: valueJSON))
-            }
+        case .success(let jsonResult):
+            return try jsonResult.decode()
+        case .failure(let errorResult):
+            log(error: errorResult.description)
+            throw errorResult
         }
     }
 }
