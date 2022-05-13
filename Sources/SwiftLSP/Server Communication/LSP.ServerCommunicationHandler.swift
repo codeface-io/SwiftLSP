@@ -6,16 +6,7 @@ extension LSP.ServerCommunicationHandler
 {
     public func request<Value: Decodable>(_ req: LSP.Message.Request) async throws -> Value
     {
-        let result = try await request(req)
-        
-        switch result
-        {
-        case .success(let jsonResult):
-            return try jsonResult.decode()
-        case .failure(let errorResult):
-            log(error: errorResult.description)
-            throw errorResult
-        }
+        try await request(req).decode()
     }
 }
 
@@ -47,7 +38,7 @@ extension LSP
         
         // MARK: - Process Requests and Responses
         
-        public func request(_ request: Message.Request) async throws -> Result<JSON, ErrorResult>
+        public func request(_ request: Message.Request) async throws -> JSON
         {
             try await withCheckedThrowingContinuation
             {
@@ -55,7 +46,18 @@ extension LSP
                 
                 saveResultHandler(for: request.id)
                 {
-                    continuation.resume(with: .success($0))
+                    [weak self] in
+                    
+                    switch $0
+                    {
+                    case .success(let jsonResult):
+                        continuation.resume(returning: jsonResult)
+                    case .failure(let errorResult):
+                        log(error: errorResult.description)
+                        continuation.resume(throwing: errorResult)
+                    }
+                    
+                    self?.removeResultHandler(for: request.id)
                 }
             
                 do
@@ -64,8 +66,8 @@ extension LSP
                 }
                 catch
                 {
-                    removeResultHandler(for: request.id)
                     continuation.resume(throwing: error)
+                    removeResultHandler(for: request.id)
                 }
             }
         }
