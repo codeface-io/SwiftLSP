@@ -16,9 +16,11 @@ extension LSP
     {
         // MARK: - Initialize
         
-        public init(connection: LSPServerConnection)
+        public init(connection: LSPServerConnection,
+                    language: String)
         {
             self.connection = connection
+            self.language = language
             
             connection.serverDidSendResponse =
             {
@@ -150,5 +152,6 @@ extension LSP
         public var serverDidSendErrorOutput: (String) -> Void = { _ in }
         
         private let connection: LSPServerConnection
+        public let language: String
     }
 }
