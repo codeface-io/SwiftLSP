@@ -35,6 +35,17 @@ public extension LSP.Message.Request
     }
 }
 
+public func log(initializeResult: JSON) throws
+{
+    // https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#serverCapabilities
+    guard let serverCapabilities = initializeResult.capabilities else
+    {
+        throw "LSP initialize result has no \"capabilities\" field"
+    }
+    
+    log("LSP Server Capabilities:\n\(serverCapabilities.description)")
+}
+
 public extension LSP.Message.Notification
 {
     static var initialized: Self
