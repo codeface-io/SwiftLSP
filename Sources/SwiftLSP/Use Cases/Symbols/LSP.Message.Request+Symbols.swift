@@ -15,14 +15,15 @@ public extension LSP.Message.Request
     /**
      https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocument_documentSymbol
      */
-    static func docSymbols(inFile file: URL) throws -> Self
+    static func docSymbols(inFile fileUri: LSPDocumentUri) throws -> Self
     {
+        let docIdentifier = LSPTextDocumentIdentifier(uri: fileUri)
+        
+        let docIdentifierJSON = try JSON(docIdentifier.encode())
+        
         let params = JSON.dictionary(
         [
-            "textDocument": .dictionary(
-            [
-                "uri": .string(file.absoluteString)
-            ])
+            "textDocument": docIdentifierJSON
         ])
         
         return .init(method: "textDocument/documentSymbol", params: params)

@@ -93,29 +93,12 @@ public struct LSPDocumentSymbol: Codable
         /**
          * The range's start position.
          */
-        public let start: Position
+        public let start: LSPPosition
 
         /**
          * The range's end position.
          */
-        public let end: Position
-        
-        public struct Position: Codable
-        {
-            /**
-             * Line position in a document (zero-based).
-             */
-            public let line: Int
-
-            /**
-             * Character offset on a line in a document (zero-based). The meaning of this
-             * offset is determined by the negotiated `PositionEncodingKind`.
-             *
-             * If the character value is greater than the line length it defaults back
-             * to the line length.
-             */
-            public let character: Int
-        }
+        public let end: LSPPosition
     }
     
     public let children: [Self]
