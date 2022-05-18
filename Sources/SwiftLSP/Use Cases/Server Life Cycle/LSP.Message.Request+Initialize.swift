@@ -25,6 +25,9 @@ public extension LSP.Message.Request
         [
             "textDocument": .dictionary( // TextDocumentClientCapabilities;
             [
+                /**
+                 * Capabilities specific to the `textDocument/documentSymbol` request.
+                 */
                 "documentSymbol": .dictionary( //DocumentSymbolClientCapabilities;
                 [
                     // https://github.com/microsoft/language-server-protocol/issues/884

@@ -50,6 +50,8 @@ extension LSP
                 {
                     [weak self] in
                     
+                    self?.removeResultHandler(for: request.id)
+                    
                     switch $0
                     {
                     case .success(let jsonResult):
@@ -58,8 +60,6 @@ extension LSP
                         log(error: errorResult.description)
                         continuation.resume(throwing: errorResult)
                     }
-                    
-                    self?.removeResultHandler(for: request.id)
                 }
             
                 do
@@ -68,8 +68,8 @@ extension LSP
                 }
                 catch
                 {
-                    continuation.resume(throwing: error)
                     removeResultHandler(for: request.id)
+                    continuation.resume(throwing: error)
                 }
             }
         }

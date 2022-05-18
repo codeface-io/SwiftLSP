@@ -26,7 +26,7 @@ public extension LSP.Message.Request
                 /**
                  * Include the declaration of the current symbol.
                  */
-                "includeDeclaration": .bool(true)
+                "includeDeclaration": .bool(false)
             ])
         ])
         
