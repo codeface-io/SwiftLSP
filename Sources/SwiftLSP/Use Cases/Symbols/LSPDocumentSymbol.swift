@@ -86,20 +86,7 @@ public struct LSPDocumentSymbol: Codable
     
     public let kind: Int
     
-    public let range: Range
-    
-    public struct Range: Codable
-    {
-        /**
-         * The range's start position.
-         */
-        public let start: LSPPosition
-
-        /**
-         * The range's end position.
-         */
-        public let end: LSPPosition
-    }
+    public let range: LSPRange
     
     public let children: [Self]
 }

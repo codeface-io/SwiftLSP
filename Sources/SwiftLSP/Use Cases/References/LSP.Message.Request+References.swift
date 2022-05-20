@@ -7,15 +7,15 @@ public extension LSP.Message.Request
      https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocument_references
      */
     static func references(for symbol: LSPDocumentSymbol,
-                           inFileAtPath filePath: String) throws -> Self
+                           in document: LSPDocumentUri) throws -> Self
     {
-        let uri: LSPDocumentUri = URL(fileURLWithPath: filePath).absoluteString
+        let docIdentifierJSON = try JSON(LSPTextDocumentIdentifier(uri: document).encode())
         
         let params = JSON.dictionary([
             /**
              * The text document.
              */
-            "textDocument": try JSON(LSPTextDocumentIdentifier(uri: uri).encode()),
+            "textDocument": docIdentifierJSON,
             
             /**
              * The position inside the text document.

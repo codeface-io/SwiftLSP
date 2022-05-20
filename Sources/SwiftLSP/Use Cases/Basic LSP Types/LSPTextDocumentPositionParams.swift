@@ -22,7 +22,29 @@ struct LSPTextDocumentIdentifier: Codable
     let uri: LSPDocumentUri
 }
 
+/**
+ https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#location
+ */
+public struct LSPLocation: Codable
+{
+    let uri: LSPDocumentUri
+    let range: LSPRange
+}
+
 public typealias LSPDocumentUri = String
+
+public struct LSPRange: Codable
+{
+    /**
+     * The range's start position.
+     */
+    public let start: LSPPosition
+
+    /**
+     * The range's end position.
+     */
+    public let end: LSPPosition
+}
 
 public struct LSPPosition: Codable
 {
