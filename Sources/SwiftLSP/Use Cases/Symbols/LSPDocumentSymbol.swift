@@ -88,5 +88,7 @@ public struct LSPDocumentSymbol: Codable
     
     public let range: LSPRange
     
+    public let selectionRange: LSPRange
+    
     public let children: [Self]
 }

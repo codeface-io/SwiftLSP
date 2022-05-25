@@ -20,7 +20,7 @@ public extension LSP.Message.Request
             /**
              * The position inside the text document.
              */
-            "position": try JSON(symbol.range.start.encode()),
+            "position": try JSON(symbol.selectionRange.start.encode()),
             
             "context": JSON.dictionary([
                 /**
