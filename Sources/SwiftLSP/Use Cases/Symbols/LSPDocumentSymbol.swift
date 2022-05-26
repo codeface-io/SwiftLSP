@@ -4,10 +4,14 @@ public extension LSPDocumentSymbol
     {
         symbolKind?.name ?? "Unknown kind of symbol"
     }
+    
+    static var kindNames: [String] { SymbolKind.names }
 }
 
 public extension LSPDocumentSymbol.SymbolKind
 {
+    static let names = allCases.map { $0.name }
+    
     var name: String
     {
         switch self
@@ -54,7 +58,7 @@ public struct LSPDocumentSymbol: Codable
         .init(rawValue: kind)
     }
     
-    public enum SymbolKind: Int
+    public enum SymbolKind: Int, CaseIterable
     {
         case File = 1
         case Module = 2
