@@ -24,7 +24,10 @@ public extension LSP
             
             webSocket.didReceiveError =
             {
-                webSocket, error in webSocket.close(); log(error)
+                [weak self] webSocket, error in
+                
+                self?.connectionDidSendError(error)
+                webSocket.close()
             }
         }
         
@@ -53,6 +56,7 @@ public extension LSP
         public var serverDidSendResponse: (LSP.Message.Response) -> Void = { _ in }
         public var serverDidSendNotification: (LSP.Message.Notification) -> Void = { _ in }
         public var serverDidSendErrorOutput: (String) -> Void = { _ in }
+        public var connectionDidSendError: (Error) -> Void = { _ in }
         
         // MARK: - Send
         

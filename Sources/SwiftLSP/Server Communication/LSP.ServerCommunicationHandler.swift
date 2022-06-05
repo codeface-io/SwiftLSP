@@ -36,6 +36,11 @@ extension LSP
             {
                 [weak self] errorOutput in self?.serverDidSendErrorOutput(errorOutput)
             }
+            
+            connection.connectionDidSendError =
+            {
+                [weak self] error in self?.connectionDidSendError(error)
+            }
         }
         
         // MARK: - Process Requests and Responses
@@ -150,6 +155,7 @@ extension LSP
         
         public var serverDidSendNotification: (Message.Notification) -> Void = { _ in }
         public var serverDidSendErrorOutput: (String) -> Void = { _ in }
+        public var connectionDidSendError: (Error) -> Void = { _ in }
         
         private let connection: LSPServerConnection
         public let language: String
