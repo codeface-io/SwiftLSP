@@ -1,4 +1,4 @@
-import Foundation
+import FoundationToolz
 import SwiftyToolz
 
 public extension LSP.Message.Request

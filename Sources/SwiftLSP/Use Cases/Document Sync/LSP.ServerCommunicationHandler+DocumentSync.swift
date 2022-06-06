@@ -14,6 +14,6 @@ public extension LSP.ServerCommunicationHandler
             "text": text
         ]
         
-        try notify(.didOpen(doc: JSON(docJSONObject)))
+        try notify(.didOpen(doc: JSON(jsonObject: docJSONObject)))
     }
 }
