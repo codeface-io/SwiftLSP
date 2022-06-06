@@ -8,8 +8,8 @@ public extension LSP {
         // MARK: - Life Cycle
         
         public init(config: Configuration) throws {
-            guard FileManager.default.fileExists(atPath: config.executablePath) else {
-                throw "Executable does not exist at given path \(config.executablePath)"
+            guard FileManager.default.fileExists(atPath: config.path) else {
+                throw "Executable does not exist at given path \(config.path)"
             }
             
             didSend = { _ in
@@ -97,12 +97,10 @@ public extension LSP {
         // MARK: - Process
         
         private func setupProcess(with config: Configuration) throws {
-            process.executableURL = URL(fileURLWithPath: config.executablePath)
+            process.executableURL = URL(fileURLWithPath: config.path)
             
             let currentEnvironment = ProcessInfo.processInfo.environment
-            let configEnvironment = config.environmentVariables ?? [:]
-            let languageServerEnvironment = currentEnvironment.merging(configEnvironment) { $1 }
-            process.environment = languageServerEnvironment
+            process.environment = currentEnvironment.merging(config.environment) { $1 }
             
             process.arguments = config.arguments
             
@@ -144,17 +142,17 @@ public extension LSP {
         
         public struct Configuration {
             
-            public init(executablePath: String,
+            public init(path: String,
                         arguments: [String] = [],
-                        environmentVariables: [String : String]? = nil) {
-                self.executablePath = executablePath
+                        environment: [String : String] = [:]) {
+                self.path = path
                 self.arguments = arguments
-                self.environmentVariables = environmentVariables
+                self.environment = environment
             }
             
-            public var executablePath: String
+            public var path: String
             public var arguments: [String]
-            public var environmentVariables: [String: String]?
+            public var environment: [String: String]
         }
     }
 }
