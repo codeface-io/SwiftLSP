@@ -143,9 +143,9 @@ public extension LSP {
         // MARK: - Configuration
         
         public struct Configuration {
-            var executablePath: String
-            var arguments: [String]
-            var environmentVariables: [String: String]?
+            public var executablePath: String
+            public var arguments: [String]
+            public var environmentVariables: [String: String]?
         }
     }
 }
