@@ -143,6 +143,15 @@ public extension LSP {
         // MARK: - Configuration
         
         public struct Configuration {
+            
+            public init(executablePath: String,
+                        arguments: [String] = [],
+                        environmentVariables: [String : String]? = nil) {
+                self.executablePath = executablePath
+                self.arguments = arguments
+                self.environmentVariables = environmentVariables
+            }
+            
             public var executablePath: String
             public var arguments: [String]
             public var environmentVariables: [String: String]?
