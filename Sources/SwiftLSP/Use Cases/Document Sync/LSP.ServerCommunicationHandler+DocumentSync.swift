@@ -4,7 +4,7 @@ import SwiftyToolz
 public extension LSP.ServerCommunicationHandler
 {
     func notifyDidOpen(_ document: LSPDocumentUri,
-                       containingText text: String) throws
+                       containingText text: String) async throws
     {
         let docJSONObject: [String: JSONObject] =
         [
@@ -14,6 +14,6 @@ public extension LSP.ServerCommunicationHandler
             "text": text
         ]
         
-        try notify(.didOpen(doc: JSON(jsonObject: docJSONObject)))
+        try await notify(.didOpen(doc: JSON(jsonObject: docJSONObject)))
     }
 }

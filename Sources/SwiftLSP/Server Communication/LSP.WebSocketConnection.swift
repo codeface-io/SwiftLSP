@@ -38,7 +38,7 @@ public extension LSP
 
                 switch message
                 {
-                case .request(_): throw "Received request from LSP server"
+                case .request: throw "Received request from LSP server"
                 case .response(let response): serverDidSendResponse(response)
                 case .notification(let notification): serverDidSendNotification(notification)
                 }
@@ -46,7 +46,7 @@ public extension LSP
             catch
             {
                 log(error)
-                log("Received data:\n" + (data.utf8String ?? "nil"))
+                log("Received data:\n" + (data.utf8String ?? "<decoding error>"))
             }
         }
         
@@ -57,12 +57,9 @@ public extension LSP
         
         // MARK: - Send
         
-        public func sendToServer(_ message: LSP.Message) throws
+        public func sendToServer(_ message: LSP.Message) async throws
         {
-            webSocket.send(try message.packet().data)
-            {
-                $0.forSome { log($0) }
-            }
+            try await webSocket.send(try message.packet().data)
         }
         
         // MARK: - WebSocket

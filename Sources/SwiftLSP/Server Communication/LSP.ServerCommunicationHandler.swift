@@ -47,7 +47,7 @@ extension LSP
         
         public func request(_ request: Message.Request) async throws -> JSON
         {
-            try await withCheckedThrowingContinuation
+            async let json: JSON = withCheckedThrowingContinuation
             {
                 continuation in
                 
@@ -66,17 +66,19 @@ extension LSP
                         continuation.resume(throwing: errorResult)
                     }
                 }
-            
-                do
-                {
-                    try connection.sendToServer(.request(request))
-                }
-                catch
-                {
-                    removeResultHandler(for: request.id)
-                    continuation.resume(throwing: error)
-                }
             }
+            
+            do
+            {
+                try await connection.sendToServer(.request(request))
+            }
+            catch
+            {
+                removeResultHandler(for: request.id)
+                throw error
+            }
+            
+            return try await json
         }
         
         private func serverDidSend(_ response: Message.Response)
@@ -148,9 +150,9 @@ extension LSP
         
         // MARK: - Forward to Connection
         
-        public func notify(_ notification: Message.Notification) throws
+        public func notify(_ notification: Message.Notification) async throws
         {
-            try connection.sendToServer(.notification(notification))
+            try await connection.sendToServer(.notification(notification))
         }
         
         public var serverDidSendNotification: (Message.Notification) -> Void = { _ in }
