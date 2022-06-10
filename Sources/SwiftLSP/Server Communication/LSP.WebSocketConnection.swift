@@ -24,10 +24,7 @@ public extension LSP
             
             webSocket.didReceiveError =
             {
-                [weak self] webSocket, error in
-                
-                self?.connectionDidSendError(error)
-                webSocket.close()
+                [weak self] _, error in self?.connectionDidSendError(error)
             }
         }
         
@@ -70,6 +67,6 @@ public extension LSP
         
         // MARK: - WebSocket
         
-        private let webSocket: WebSocket
+        public let webSocket: WebSocket
     }
 }
