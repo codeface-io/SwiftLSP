@@ -24,11 +24,16 @@ public extension LSP
             
             webSocket.didReceiveError =
             {
-                [weak self] _, error in self?.connectionDidSendError(error)
+                [weak self] _, error in self?.didSendError(error)
+            }
+            
+            webSocket.didClose =
+            {
+                [weak self] _ in self?.didClose()
             }
         }
         
-        // MARK: - Receive
+        // MARK: - Talk to LSP Server
         
         private func process(data: Data)
         {
@@ -53,13 +58,26 @@ public extension LSP
         public var serverDidSendResponse: (LSP.Message.Response) -> Void = { _ in }
         public var serverDidSendNotification: (LSP.Message.Notification) -> Void = { _ in }
         public var serverDidSendErrorOutput: (String) -> Void = { _ in }
-        public var connectionDidSendError: (Error) -> Void = { _ in }
-        
-        // MARK: - Send
         
         public func sendToServer(_ message: LSP.Message) async throws
         {
             try await webSocket.send(try message.packet().data)
+        }
+        
+        // MARK: - Manage Connection
+        
+        public var didSendError: (Error) -> Void =
+        {
+            _ in log(warning: "LSP WebSocket connection error handler not set")
+        }
+        
+        public var isClosed: Bool { webSocket.isClosed }
+        
+        public func close() { webSocket.close() }
+        
+        public var didClose: () -> Void =
+        {
+            log(warning: "LSP WebSocket connection close handler not set")
         }
         
         // MARK: - WebSocket

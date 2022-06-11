@@ -36,12 +36,9 @@ extension LSP
             {
                 [weak self] errorOutput in self?.serverDidSendErrorOutput(errorOutput)
             }
-            
-            connection.connectionDidSendError =
-            {
-                [weak self] error in self?.connectionDidSendError(error)
-            }
         }
+        
+        public let language: String
         
         // MARK: - Process Requests and Responses
         
@@ -155,11 +152,18 @@ extension LSP
             try await connection.sendToServer(.notification(notification))
         }
         
-        public var serverDidSendNotification: (Message.Notification) -> Void = { _ in }
-        public var serverDidSendErrorOutput: (String) -> Void = { _ in }
-        public var connectionDidSendError: (Error) -> Void = { _ in }
+        public var serverDidSendNotification: (Message.Notification) -> Void =
+        {
+            _ in log(warning: "LSP.ServerCommunicationHandler notification handler not set")
+        }
         
-        private let connection: LSPServerConnection
-        public let language: String
+        public var serverDidSendErrorOutput: (String) -> Void =
+        {
+            _ in log(warning: "LSP.ServerCommunicationHandler stdErr handler not set")
+        }
+        
+        // MARK: - Server Connection
+        
+        public let connection: LSPServerConnection
     }
 }
