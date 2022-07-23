@@ -7,7 +7,7 @@ public protocol LSPServerConnection: AnyObject
     var serverDidSendNotification: (LSP.Message.Notification) -> Void { get set }
     var serverDidSendErrorOutput: (String) -> Void { get set }
     
-    // MARK: - Manage the Connection to the LSP Server
+    // MARK: - Manage the LSP Server Connection itself
     
     var didSendError: (Error) -> Void { get set }
     var isClosed: Bool { get }
