@@ -6,7 +6,7 @@ public extension LSP.Message.Request
     /**
      https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocument_references
      */
-    static func references(for symbol: LSPDocumentSymbol,
+    static func references(forSymbolSelectionRange selectionRange: LSPRange,
                            in document: LSPDocumentUri) throws -> Self
     {
         let docIdentifierJSON = try JSON(LSPTextDocumentIdentifier(uri: document).encode())
@@ -20,7 +20,7 @@ public extension LSP.Message.Request
             /**
              * The position inside the text document.
              */
-            "position": try JSON(symbol.selectionRange.start.encode()),
+            "position": try JSON(selectionRange.start.encode()),
             
             "context": JSON.dictionary([
                 /**

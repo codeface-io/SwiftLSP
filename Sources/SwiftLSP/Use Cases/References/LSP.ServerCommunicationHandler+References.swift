@@ -1,9 +1,9 @@
 extension LSP.ServerCommunicationHandler
 {
     /// This just adds the knowledge of what result type the server returns
-    public func requestReferences(for symbol: LSPDocumentSymbol,
+    public func requestReferences(forSymbolSelectionRange selectionRange: LSPRange,
                                   in document: LSPDocumentUri) async throws -> [LSPLocation]
     {
-        try await request(.references(for: symbol, in: document))
+        try await request(.references(forSymbolSelectionRange: selectionRange, in: document))
     }
 }
