@@ -3,8 +3,8 @@
  */
 public struct LSPLocation: Codable
 {
-    let uri: LSPDocumentUri
-    let range: LSPRange
+    public let uri: LSPDocumentUri
+    public let range: LSPRange
 }
 
 public typealias LSPDocumentUri = String

@@ -1,23 +1,23 @@
 /**
  https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocumentPositionParams
  */
-struct LSPTextDocumentPositionParams: Codable
+public struct LSPTextDocumentPositionParams: Codable
 {
     /**
      * The text document.
      */
-    let textDocument: LSPTextDocumentIdentifier
+    public let textDocument: LSPTextDocumentIdentifier
 
     /**
      * The position inside the text document.
      */
-    let position: LSPPosition
+    public let position: LSPPosition
 }
 
-struct LSPTextDocumentIdentifier: Codable
+public struct LSPTextDocumentIdentifier: Codable
 {
     /**
      * The text document's URI.
      */
-    let uri: LSPDocumentUri
+    public let uri: LSPDocumentUri
 }
