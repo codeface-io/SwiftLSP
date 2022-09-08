@@ -39,9 +39,11 @@ public extension LSPDocumentSymbol.SymbolKind
 /**
  https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#documentSymbol
  */
-public struct LSPDocumentSymbol: Codable
+public struct LSPDocumentSymbol: Codable, Equatable
 {
     public let name: String
+    
+    public var decodedKind: SymbolKind? { .init(rawValue: kind) }
     
     public enum SymbolKind: Int, CaseIterable, Codable
     {
