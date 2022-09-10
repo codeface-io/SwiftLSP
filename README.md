@@ -12,6 +12,35 @@
 
 SwiftLSP is the basis for [LSPService](https://github.com/flowtoolz/LSPService) and [LSPServiceKit](https://github.com/flowtoolz/LSPServiceKit).
 
-Some essential types:
+## Architecture
+
+Some context and essential types:
 
 ![architecture](Documentation/architecture.jpg)
+
+The following are architecture diagrams of the top-level source folders, generated with the [Codeface.io](https://www.codeface.io) app:
+
+### SwiftLSP
+
+![](Documentation/SwiftLSP.png)
+
+### Use Cases
+
+![](Documentation/Use Cases.png)
+
+### Server Communication
+
+![](Documentation/Server Communication.png)
+
+### Packets
+
+![](Documentation/Packets.png)
+
+### Message
+
+![](Documentation/Message.png)
+
+
+
+
+
