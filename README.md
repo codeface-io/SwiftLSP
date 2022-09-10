@@ -26,11 +26,11 @@ The following are architecture diagrams of the top-level source folders, generat
 
 ### Use Cases
 
-![](Documentation/Use Cases.png)
+![](Documentation/UseCases.png)
 
 ### Server Communication
 
-![](Documentation/Server Communication.png)
+![](Documentation/ServerCommunication.png)
 
 ### Packets
 
