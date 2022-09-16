@@ -45,7 +45,7 @@ public struct LSPDocumentSymbol: Codable, Equatable
     
     public var decodedKind: SymbolKind? { .init(rawValue: kind) }
     
-    public enum SymbolKind: Int, CaseIterable, Codable
+    public enum SymbolKind: Int, CaseIterable, Codable, Equatable
     {
         case File = 1
         case Module = 2
