@@ -12,7 +12,7 @@ extension LSP.ServerCommunicationHandler
 
 extension LSP
 {
-    public class ServerCommunicationHandler
+    public actor ServerCommunicationHandler
     {
         // MARK: - Initialize
         
@@ -24,17 +24,32 @@ extension LSP
             
             connection.serverDidSendResponse =
             {
-                [weak self] response in self?.serverDidSend(response)
+                response in
+                
+                Task
+                {
+                    [weak self] in await self?.serverDidSend(response)
+                }
             }
             
             connection.serverDidSendNotification =
             {
-                [weak self] notification in self?.serverDidSendNotification(notification)
+                notification in
+                
+                Task
+                {
+                    [weak self] in await self?.serverDidSendNotification(notification)
+                }
             }
             
             connection.serverDidSendErrorOutput =
             {
-                [weak self] errorOutput in self?.serverDidSendErrorOutput(errorOutput)
+                errorOutput in
+                
+                Task
+                {
+                    [weak self] in await self?.serverDidSendErrorOutput(errorOutput)
+                }
             }
         }
         
@@ -48,19 +63,24 @@ extension LSP
             {
                 continuation in
                 
-                saveResultHandler(for: request.id)
+                Task
                 {
                     [weak self] in
                     
-                    self?.removeResultHandler(for: request.id)
-                    
-                    switch $0
+                    await self?.saveResultHandler(for: request.id)
                     {
-                    case .success(let jsonResult):
-                        continuation.resume(returning: jsonResult)
-                    case .failure(let errorResult):
-                        log(error: errorResult.description)
-                        continuation.resume(throwing: errorResult)
+                        result in
+                        
+                        await self?.removeResultHandler(for: request.id)
+                        
+                        switch result
+                        {
+                        case .success(let jsonResult):
+                            continuation.resume(returning: jsonResult)
+                        case .failure(let errorResult):
+                            log(error: errorResult.description)
+                            continuation.resume(throwing: errorResult)
+                        }
                     }
                 }
             }
@@ -78,7 +98,7 @@ extension LSP
             return try await json
         }
         
-        private func serverDidSend(_ response: Message.Response)
+        private func serverDidSend(_ response: Message.Response) async
         {
             switch response.id
             {
@@ -88,7 +108,7 @@ extension LSP
                     log(error: "No result handler found")
                     break
                 }
-                handleResult(response.result)
+                await handleResult(response.result)
             case .null:
                 switch response.result
                 {
@@ -142,7 +162,7 @@ extension LSP
         private var resultHandlersString = [RequestIDString: ResultHandler]()
         private typealias RequestIDString = String
         
-        public typealias ResultHandler = (Result<JSON, ErrorResult>) -> Void
+        public typealias ResultHandler = (Result<JSON, ErrorResult>) async -> Void
         public typealias ErrorResult = Message.Response.ErrorResult
         
         // MARK: - Forward to Connection
@@ -152,12 +172,22 @@ extension LSP
             try await connection.sendToServer(.notification(notification))
         }
         
-        public var serverDidSendNotification: (Message.Notification) -> Void =
+        public func setNotificationHandler(_ handleNotification: @escaping (Message.Notification) -> Void)
+        {
+            serverDidSendNotification = handleNotification
+        }
+        
+        private var serverDidSendNotification: (Message.Notification) -> Void =
         {
             _ in log(warning: "LSP.ServerCommunicationHandler notification handler not set")
         }
         
-        public var serverDidSendErrorOutput: (String) -> Void =
+        public func setErrorOutputHandler(_ handleErrorOutput: @escaping (String) -> Void)
+        {
+            serverDidSendErrorOutput = handleErrorOutput
+        }
+        
+        private var serverDidSendErrorOutput: (String) -> Void =
         {
             _ in log(warning: "LSP.ServerCommunicationHandler stdErr handler not set")
         }
