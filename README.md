@@ -10,7 +10,7 @@
 * Exchanging LSP Messages with an LSP Server
 * Exchanging LSP Messages with an LSP Server via WebSocket
 
-SwiftLSP is the basis for [LSPService](https://github.com/flowtoolz/LSPService) and [LSPServiceKit](https://github.com/flowtoolz/LSPServiceKit).
+SwiftLSP is the basis for [LSPService](https://github.com/codeface-io/LSPService) and [LSPServiceKit](https://github.com/codeface-io/LSPServiceKit).
 
 ## Architecture
 
