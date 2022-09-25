@@ -47,7 +47,7 @@ extension LSP
             public let params: JSON?
         }
         
-        public enum ID
+        public enum ID: Hashable
         {
             public init() { self = .string(UUID().uuidString) }
             
