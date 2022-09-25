@@ -16,8 +16,7 @@ extension LSP
     {
         // MARK: - Initialize
         
-        public init(connection: LSPServerConnection,
-                    language: String)
+        public init(connection: LSPServerConnection, language: String)
         {
             self.connection = connection
             self.language = language
@@ -38,7 +37,7 @@ extension LSP
                 
                 Task
                 {
-                    [weak self] in await self?.serverDidSendNotification(notification)
+                    [weak self] in await self?.notifyClientAboutNotificationFromServer(notification)
                 }
             }
             
@@ -48,50 +47,52 @@ extension LSP
                 
                 Task
                 {
-                    [weak self] in await self?.serverDidSendErrorOutput(errorOutput)
+                    [weak self] in await self?.notifyClientAboutErrorOutputFromServer(errorOutput)
+                }
+            }
+            
+            connection.didCloseWithError =
+            {
+                error in
+                
+                Task
+                {
+                    [weak self] in await self?.connectionDidClose(with: error)
                 }
             }
         }
         
         public let language: String
         
-        // MARK: - Process Requests and Responses
+        // MARK: - Observe the Connection
         
-        public func request(_ request: Message.Request) async throws -> JSON
+        private func connectionDidClose(with error: Error)
+        {
+            cancelAllPendingRequests(with: error)
+            notifyClientThatConnectionDidShutDown(error)
+        }
+        
+        // MARK: - Make Async Requests to LSP Server
+        
+        public func request(_ requestMessage: Message.Request) async throws -> JSON
         {
             async let json: JSON = withCheckedThrowingContinuation
             {
-                continuation in
+                request in
                 
                 Task
                 {
-                    [weak self] in
-                    
-                    await self?.saveResultHandler(for: request.id)
-                    {
-                        result in
-                        
-                        await self?.removeResultHandler(for: request.id)
-                        
-                        switch result
-                        {
-                        case .success(let jsonResult):
-                            continuation.resume(returning: jsonResult)
-                        case .failure(let errorResult):
-                            log(error: errorResult.description)
-                            continuation.resume(throwing: errorResult)
-                        }
-                    }
+                    [weak self] in await self?.save(request, for: requestMessage.id)
                 }
             }
             
             do
             {
-                try await connection.sendToServer(.request(request))
+                try await connection.sendToServer(.request(requestMessage))
             }
             catch
             {
-                removeResultHandler(for: request.id)
+                removeRequest(for: requestMessage.id)
                 throw error
             }
             
@@ -103,12 +104,20 @@ extension LSP
             switch response.id
             {
             case .value(let id):
-                guard let handleResult = resultHandler(for: id) else
+                guard let request = removeRequest(for: id) else
                 {
-                    log(error: "No result handler found")
+                    log(error: "No matching request found")
                     break
                 }
-                await handleResult(response.result)
+                
+                switch response.result
+                {
+                case .success(let jsonResult):
+                    request.resume(returning: jsonResult)
+                case .failure(let errorResult):
+                    // TODO: ensure clients actually try to cast thrown errors to LSP.Message.Response.ErrorResult
+                    request.resume(throwing: errorResult)
+                }
             case .null:
                 switch response.result
                 {
@@ -120,80 +129,71 @@ extension LSP
             }
         }
         
-        // MARK: - Manage Result Handlers
-        
-        private func saveResultHandler(for id: Message.ID,
-                                       resultHandler: @escaping ResultHandler)
+        private func cancelAllPendingRequests(with error: Error)
         {
-            switch id
+            for request in resquestsByMessageID.values
             {
-            case .string(let idString):
-                resultHandlersString[idString] = resultHandler
-            case .int(let idInt):
-                resultHandlersInt[idInt] = resultHandler
+                request.resume(throwing: error)
             }
+            
+            resquestsByMessageID.removeAll()
         }
         
-        private func removeResultHandler(for id: Message.ID)
+        private func save(_ request: Request, for id: Message.ID)
         {
-            switch id
-            {
-            case .string(let idString):
-                resultHandlersString[idString] = nil
-            case .int(let idInt):
-                resultHandlersInt[idInt] = nil
-            }
+            resquestsByMessageID[id] = request
         }
         
-        private func resultHandler(for id: Message.ID) -> ResultHandler?
+        @discardableResult
+        private func removeRequest(for id: Message.ID) -> Request?
         {
-            switch id
-            {
-            case .string(let idString):
-                return resultHandlersString[idString]
-            case .int(let idInt):
-                return resultHandlersInt[idInt]
-            }
+            resquestsByMessageID.removeValue(forKey: id)
         }
         
-        private var resultHandlersInt = [RequestIDInt: ResultHandler]()
-        private typealias RequestIDInt = Int
+        private var resquestsByMessageID = [Message.ID: Request]()
+        private typealias Request = CheckedContinuation<JSON, Error>
         
-        private var resultHandlersString = [RequestIDString: ResultHandler]()
-        private typealias RequestIDString = String
-        
-        public typealias ResultHandler = (Result<JSON, ErrorResult>) async -> Void
-        public typealias ErrorResult = Message.Response.ErrorResult
-        
-        // MARK: - Forward to Connection
+        // MARK: - Send Notification to LSP Server
         
         public func notify(_ notification: Message.Notification) async throws
         {
             try await connection.sendToServer(.notification(notification))
         }
         
-        public func setNotificationHandler(_ handleNotification: @escaping (Message.Notification) -> Void)
+        // MARK: - Receive Feedback from LSP Server and from Connection
+        
+        public func handleNotificationFromServer(_ handleNotification: @escaping (Message.Notification) -> Void)
         {
-            serverDidSendNotification = handleNotification
+            notifyClientAboutNotificationFromServer = handleNotification
         }
         
-        private var serverDidSendNotification: (Message.Notification) -> Void =
+        private var notifyClientAboutNotificationFromServer: (Message.Notification) -> Void =
         {
-            _ in log(warning: "LSP.ServerCommunicationHandler notification handler not set")
+            _ in log(warning: "notification handler not set")
         }
         
-        public func setErrorOutputHandler(_ handleErrorOutput: @escaping (String) -> Void)
+        public func handleErrorOutputFromServer(_ handleErrorOutput: @escaping (String) -> Void)
         {
-            serverDidSendErrorOutput = handleErrorOutput
+            notifyClientAboutErrorOutputFromServer = handleErrorOutput
         }
         
-        private var serverDidSendErrorOutput: (String) -> Void =
+        private var notifyClientAboutErrorOutputFromServer: (String) -> Void =
         {
-            _ in log(warning: "LSP.ServerCommunicationHandler stdErr handler not set")
+            _ in log(warning: "stdErr handler not set")
+        }
+        
+        public func handleConnectionShutdown(_ handleError: @escaping (Error) -> Void)
+        {
+            notifyClientThatConnectionDidShutDown = handleError
+        }
+        
+        private var notifyClientThatConnectionDidShutDown: (Error) -> Void =
+        {
+            _ in log(warning: "connection close handler not set")
         }
         
         // MARK: - Server Connection
         
-        public let connection: LSPServerConnection
+        private let connection: LSPServerConnection
     }
 }

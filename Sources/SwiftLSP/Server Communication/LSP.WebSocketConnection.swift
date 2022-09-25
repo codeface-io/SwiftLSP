@@ -22,14 +22,9 @@ public extension LSP
                 [weak self] text in self?.serverDidSendErrorOutput(text)
             }
             
-            webSocket.didReceiveError =
+            webSocket.didCloseWithError =
             {
-                [weak self] _, error in self?.didSendError(error)
-            }
-            
-            webSocket.didClose =
-            {
-                [weak self] _ in self?.didClose()
+                [weak self] _, error in self?.didCloseWithError(error)
             }
         }
         
@@ -43,14 +38,17 @@ public extension LSP
 
                 switch message
                 {
-                case .request: throw "Received request from LSP server"
-                case .response(let response): serverDidSendResponse(response)
-                case .notification(let notification): serverDidSendNotification(notification)
+                case .request:
+                    throw "Received request from LSP server"
+                case .response(let response):
+                    serverDidSendResponse(response)
+                case .notification(let notification):
+                    serverDidSendNotification(notification)
                 }
             }
             catch
             {
-                log(error)
+                log(error.readable)
                 log("Received data:\n" + (data.utf8String ?? "<decoding error>"))
             }
         }
@@ -66,18 +64,9 @@ public extension LSP
         
         // MARK: - Manage Connection
         
-        public var didSendError: (Error) -> Void =
+        public var didCloseWithError: (Error) -> Void =
         {
             _ in log(warning: "LSP WebSocket connection error handler not set")
-        }
-        
-        public var isClosed: Bool { webSocket.isClosed }
-        
-        public func close() { webSocket.close() }
-        
-        public var didClose: () -> Void =
-        {
-            log(warning: "LSP WebSocket connection close handler not set")
         }
         
         // MARK: - WebSocket

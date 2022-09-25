@@ -9,8 +9,5 @@ public protocol LSPServerConnection: AnyObject
     
     // MARK: - Manage the LSP Server Connection itself
     
-    var didSendError: (Error) -> Void { get set }
-    var isClosed: Bool { get }
-    func close()
-    var didClose: () -> Void { get set }
+    var didCloseWithError: (Error) -> Void { get set }
 }
