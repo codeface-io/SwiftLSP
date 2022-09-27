@@ -13,17 +13,23 @@ let package = Package(
     dependencies: [
         .package(
             url: "https://github.com/flowtoolz/FoundationToolz.git",
-            .branch("master")),
+            .branch("master")
+        ),
         .package(
             url: "https://github.com/flowtoolz/SwiftyToolz.git",
-            .branch("master"))
+            .branch("master")
+        )
     ],
     targets: [
         .target(
             name: "SwiftLSP",
-            dependencies: ["FoundationToolz", "SwiftyToolz"]),
+            dependencies: ["FoundationToolz", "SwiftyToolz"],
+            path: "Sources"
+        ),
         .testTarget(
             name: "SwiftLSPTests",
-            dependencies: ["SwiftLSP"]),
+            dependencies: ["SwiftLSP"],
+            path: "Tests"
+        ),
     ]
 )
