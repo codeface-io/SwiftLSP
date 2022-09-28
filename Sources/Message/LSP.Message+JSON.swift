@@ -17,6 +17,8 @@ extension LSP.Message
             return
         }
         
+        // it's not a notification. if it has result or error, it's a response
+        
         if let result = messageJSON.result // success response
         {
             self = .response(.init(id: nullableID, result: .success(result)))
@@ -54,33 +56,57 @@ extension LSP.Message
     
     public func json() -> JSON
     {
-        var dictionary: [String : JSON] = ["jsonrpc": .string("2.0")]
-        
+        .dictionary(["jsonrpc": JSON.string("2.0")] + caseJSONDictionary())
+    }
+    
+    internal func caseJSONDictionary() -> [String: JSON]
+    {
         switch self
         {
-        case .request(let request):
-            dictionary["id"] = request.id.json
-            dictionary["method"] = .string(request.method)
-            dictionary["params"] = request.params
-        case .response(let response):
-            dictionary["id"] = response.id.json
-            switch response.result
-            {
-            case .success(let jsonResult):
-                dictionary["result"] = jsonResult
-            case .failure(let errorResult):
-                dictionary["error"] = errorResult.json()
-            }
-        case .notification(let notification):
-            dictionary["method"] = .string(notification.method)
-            dictionary["params"] = notification.params
+        case .request(let request): return request.jsonDictionary()
+        case .response(let response): return response.jsonDictionary()
+        case .notification(let notification): return notification.jsonDictionary()
         }
-        
-        return .dictionary(dictionary)
     }
 }
 
-extension LSP.Message.Response.ErrorResult
+extension LSP.Message.Request
+{
+    func jsonDictionary() -> [String : JSON]
+    {
+        var dictionary = [ "id": id.json, "method": .string(method) ]
+        dictionary["params"] = params
+        return dictionary
+    }
+}
+
+extension LSP.Message.Response
+{
+    func jsonDictionary() -> [String : JSON]
+    {
+        var dictionary = ["id": id.json]
+        
+        switch result
+        {
+        case .success(let jsonResult): dictionary["result"] = jsonResult
+        case .failure(let errorResult): dictionary["error"] = errorResult.json()
+        }
+        
+        return dictionary
+    }
+}
+
+extension LSP.Message.Notification
+{
+    func jsonDictionary() -> [String : JSON]
+    {
+        var dictionary = ["method": JSON.string(method)]
+        dictionary["params"] = params
+        return dictionary
+    }
+}
+
+extension LSP.ErrorResult
 {
     init(_ json: JSON) throws
     {

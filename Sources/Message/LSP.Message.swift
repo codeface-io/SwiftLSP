@@ -3,6 +3,8 @@ import SwiftyToolz
 
 extension LSP
 {
+    typealias ErrorResult = Message.Response.ErrorResult
+    
     public enum Message
     {
         case response(Response)
@@ -20,7 +22,7 @@ extension LSP
             public let id: NullableID
             public let result: Result<JSON, ErrorResult>
             
-            public struct ErrorResult: Error
+            public struct ErrorResult: Error, Equatable
             {
                 public let code: Int
                 public let message: String
@@ -28,7 +30,7 @@ extension LSP
             }
         }
         
-        public enum NullableID
+        public enum NullableID: Equatable
         {
             case value(ID), null
         }

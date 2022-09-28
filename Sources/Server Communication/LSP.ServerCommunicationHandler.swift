@@ -117,7 +117,7 @@ extension LSP
                 case .success(let jsonResult):
                     request.resume(returning: jsonResult)
                 case .failure(let errorResult):
-                    // TODO: ensure clients actually try to cast thrown errors to LSP.Message.Response.ErrorResult
+                    // TODO: ensure clients actually try to cast thrown errors to LSP.ErrorResult
                     request.resume(throwing: errorResult)
                 }
             case .null:
