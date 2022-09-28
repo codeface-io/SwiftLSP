@@ -12,14 +12,16 @@ extension LSP.ServerCommunicationHandler
 
 extension LSP
 {
+    public typealias Server = ServerCommunicationHandler
+    
     public actor ServerCommunicationHandler
     {
         // MARK: - Initialize
         
-        public init(connection: LSPServerConnection, language: String)
+        public init(connection: LSPServerConnection, languageName: String)
         {
             self.connection = connection
-            self.language = language
+            self.languageIdentifier = .init(languageName: languageName)
             
             connection.serverDidSendResponse =
             {
@@ -62,7 +64,7 @@ extension LSP
             }
         }
         
-        public let language: String
+        public let languageIdentifier: LanguageIdentifier
         
         // MARK: - Observe the Connection
         

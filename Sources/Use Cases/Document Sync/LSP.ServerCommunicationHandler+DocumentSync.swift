@@ -9,7 +9,7 @@ public extension LSP.ServerCommunicationHandler
         let docJSONObject: [String: JSONObject] =
         [
             "uri": document,
-            "languageId": language,
+            "languageId": languageIdentifier.string,
             "version": 1,
             "text": text
         ]
