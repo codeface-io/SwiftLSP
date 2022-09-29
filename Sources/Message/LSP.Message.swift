@@ -50,7 +50,7 @@ extension LSP
          */
         public struct Request: Equatable
         {
-            public init(id: ID = ID(), method: String, params: Parameters?)
+            public init(id: ID = ID(), method: String, params: JSON.Container?)
             {
                 self.id = id
                 self.method = method
@@ -59,7 +59,7 @@ extension LSP
             
             public let id: ID
             public let method: String
-            public let params: Parameters?
+            public let params: JSON.Container?
         }
         
         public enum ID: Hashable
@@ -74,19 +74,14 @@ extension LSP
          */
         public struct Notification: Equatable
         {
-            public init(method: String, params: Parameters?)
+            public init(method: String, params: JSON.Container?)
             {
                 self.method = method
                 self.params = params
             }
             
             public let method: String
-            public let params: Parameters?
-        }
-        
-        public enum Parameters: Equatable
-        {
-            case object([String: JSON]), array([JSON])
+            public let params: JSON.Container?
         }
     }
 }

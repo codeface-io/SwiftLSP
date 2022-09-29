@@ -11,7 +11,7 @@ public extension LSP.Message.Request
     {
         let docIdentifierJSON = try JSON(LSPTextDocumentIdentifier(uri: document).encode())
         
-        let params = LSP.Message.Parameters.object([
+        let params = JSON.Container.object([
             /**
              * The text document.
              */
@@ -22,7 +22,7 @@ public extension LSP.Message.Request
              */
             "position": try JSON(selectionRange.start.encode()),
             
-            "context": JSON.dictionary([
+            "context": JSON.object([
                 /**
                  * Include the declaration of the current symbol.
                  */

@@ -22,14 +22,14 @@ public extension LSP.Message.Request
      */
     static var defaultClientCapabilities: JSON
     {
-        .dictionary(
+        .object(
         [
-            "textDocument": .dictionary( // TextDocumentClientCapabilities;
+            "textDocument": .object( // TextDocumentClientCapabilities;
             [
                 /**
                  * Capabilities specific to the `textDocument/documentSymbol` request.
                  */
-                "documentSymbol": .dictionary( //DocumentSymbolClientCapabilities;
+                "documentSymbol": .object( //DocumentSymbolClientCapabilities;
                 [
                     // https://github.com/microsoft/language-server-protocol/issues/884
                     "hierarchicalDocumentSymbolSupport": .bool(true)

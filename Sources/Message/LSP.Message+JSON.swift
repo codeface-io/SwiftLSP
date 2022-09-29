@@ -13,7 +13,7 @@ extension LSP.Message
         {
             // if it has no id, it must be a notification
             self = try .notification(.init(method: messageJSON.string("method"),
-                                           params: .init(messageJSON.params)))
+                                           params: Self.params(fromMessageJSON: messageJSON)))
             return
         }
         
@@ -47,8 +47,14 @@ extension LSP.Message
             
             self = try .request(.init(id: id,
                                       method: messageJSON.string("method"),
-                                      params: .init(messageJSON.params)))
+                                      params: try Self.params(fromMessageJSON: messageJSON)))
         }
+    }
+    
+    private static func params(fromMessageJSON messageJSON: JSON) throws -> JSON.Container?
+    {
+        guard let paramsJSON = messageJSON.params else { return nil }
+        return try .init(paramsJSON)
     }
     
     private static func getNullableID(fromMessage messageJSON: JSON) -> NullableID?
@@ -66,7 +72,7 @@ extension LSP.Message
     
     public func json() -> JSON
     {
-        .dictionary(["jsonrpc": JSON.string("2.0")] + caseJSONDictionary())
+        .object(["jsonrpc": JSON.string("2.0")] + caseJSONDictionary())
     }
     
     internal func caseJSONDictionary() -> [String: JSON]
@@ -116,33 +122,6 @@ extension LSP.Message.Notification
     }
 }
 
-extension LSP.Message.Parameters
-{
-    init?(_ json: JSON?) throws
-    {
-        guard let json else { return nil }
-        
-        switch json
-        {
-        case .dictionary(let dictionary):
-            self = .object(dictionary)
-        case .array(let array):
-            self = .array(array)
-        default:
-            throw "Invalid JSON for LSP message parameters. JSON must be distionary or array."
-        }
-    }
-    
-    func json() -> JSON
-    {
-        switch self
-        {
-        case .object(let dictionary): return .dictionary(dictionary)
-        case .array(let array): return .array(array)
-        }
-    }
-}
-
 extension LSP.ErrorResult
 {
     init(_ json: JSON) throws
@@ -162,7 +141,7 @@ extension LSP.ErrorResult
         
         dictionary["data"] = data
         
-        return .dictionary(dictionary)
+        return .object(dictionary)
     }
 }
 
