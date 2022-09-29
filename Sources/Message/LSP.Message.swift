@@ -8,7 +8,7 @@ extension LSP
     /**
      https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#abstractMessage
      */
-    public enum Message
+    public enum Message: Equatable
     {
         case response(Response)
         case request(Request)
@@ -17,7 +17,7 @@ extension LSP
         /**
          https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#responseMessage
          */
-        public struct Response
+        public struct Response: Equatable
         {
             public init(id: NullableID, result: Result<JSON, ErrorResult>)
             {
@@ -48,7 +48,7 @@ extension LSP
         /**
          https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#requestMessage
          */
-        public struct Request
+        public struct Request: Equatable
         {
             public init(id: ID = ID(), method: String, params: Parameters?)
             {
@@ -72,7 +72,7 @@ extension LSP
         /**
          https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#notificationMessage
          */
-        public struct Notification
+        public struct Notification: Equatable
         {
             public init(method: String, params: Parameters?)
             {
