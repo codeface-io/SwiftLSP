@@ -12,9 +12,9 @@ public extension LSP.Message.Request
                            capabilities: JSON = defaultClientCapabilities) -> Self
     {
         .init(method: "initialize",
-              params: .dictionary(["rootUri": .string(folder.absoluteString),
-                                   "processId": .int(clientProcessID),
-                                   "capabilities": capabilities]))
+              params: .object(["rootUri": .string(folder.absoluteString),
+                               "processId": .int(clientProcessID),
+                               "capabilities": capabilities]))
     }
     
     /**

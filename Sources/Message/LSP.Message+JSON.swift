@@ -13,7 +13,7 @@ extension LSP.Message
         {
             // if it has no id, it must be a notification
             self = try .notification(.init(method: messageJSON.string("method"),
-                                           params: messageJSON.params))
+                                           params: .init(messageJSON.params)))
             return
         }
         
@@ -37,7 +37,7 @@ extension LSP.Message
             
             self = try .request(.init(id: id,
                                       method: messageJSON.string("method"),
-                                      params: messageJSON.params))
+                                      params: .init(messageJSON.params)))
         }
     }
     
@@ -75,7 +75,7 @@ extension LSP.Message.Request
     func jsonDictionary() -> [String : JSON]
     {
         var dictionary = [ "id": id.json, "method": .string(method) ]
-        dictionary["params"] = params
+        dictionary["params"] = params?.json()
         return dictionary
     }
 }
@@ -101,8 +101,35 @@ extension LSP.Message.Notification
     func jsonDictionary() -> [String : JSON]
     {
         var dictionary = ["method": JSON.string(method)]
-        dictionary["params"] = params
+        dictionary["params"] = params?.json()
         return dictionary
+    }
+}
+
+extension LSP.Message.Parameters
+{
+    init?(_ json: JSON?) throws
+    {
+        guard let json else { return nil }
+        
+        switch json
+        {
+        case .dictionary(let dictionary):
+            self = .object(dictionary)
+        case .array(let array):
+            self = .array(array)
+        default:
+            throw "Invalid JSON for LSP message parameters. JSON must be distionary or array."
+        }
+    }
+    
+    func json() -> JSON
+    {
+        switch self
+        {
+        case .object(let dictionary): return .dictionary(dictionary)
+        case .array(let array): return .array(array)
+        }
     }
 }
 

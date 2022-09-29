@@ -5,6 +5,9 @@ extension LSP
 {
     typealias ErrorResult = Message.Response.ErrorResult
     
+    /**
+     https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#abstractMessage
+     */
     public enum Message
     {
         case response(Response)
@@ -37,7 +40,7 @@ extension LSP
         
         public struct Request
         {
-            public init(id: ID = ID(), method: String, params: JSON?)
+            public init(id: ID = ID(), method: String, params: Parameters?)
             {
                 self.id = id
                 self.method = method
@@ -46,7 +49,7 @@ extension LSP
             
             public let id: ID
             public let method: String
-            public let params: JSON?
+            public let params: Parameters?
         }
         
         public enum ID: Hashable
@@ -58,14 +61,20 @@ extension LSP
         
         public struct Notification
         {
-            public init(method: String, params: JSON?)
+            public init(method: String, params: Parameters?)
             {
                 self.method = method
                 self.params = params
             }
             
             public let method: String
-            public let params: JSON?
+            public let params: Parameters?
+        }
+        
+        public enum Parameters: Equatable
+        {
+            case object([String: JSON])
+            case array([JSON])
         }
     }
 }

@@ -8,6 +8,6 @@ public extension LSP.Message.Notification
     static func didOpen(doc: JSON) -> Self
     {
         .init(method: "textDocument/didOpen",
-              params: .dictionary(["textDocument": doc]))
+              params: .object(["textDocument": doc]))
     }
 }

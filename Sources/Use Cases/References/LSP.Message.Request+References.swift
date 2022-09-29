@@ -11,7 +11,7 @@ public extension LSP.Message.Request
     {
         let docIdentifierJSON = try JSON(LSPTextDocumentIdentifier(uri: document).encode())
         
-        let params = JSON.dictionary([
+        let params = LSP.Message.Parameters.object([
             /**
              * The text document.
              */

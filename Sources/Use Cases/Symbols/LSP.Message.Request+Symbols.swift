@@ -9,7 +9,7 @@ public extension LSP.Message.Request
     static func workspaceSymbols(forQuery query: String = "") -> Self
     {
         .init(method: "workspace/symbol",
-              params: .dictionary(["query": .string(query)]))
+              params: .object(["query": .string(query)]))
     }
     
     /**
@@ -19,7 +19,7 @@ public extension LSP.Message.Request
     {
         let docIdentifier = LSPTextDocumentIdentifier(uri: document)
         
-        let params = JSON.dictionary(
+        let params = LSP.Message.Parameters.object(
         [
             "textDocument": try JSON(docIdentifier.encode())
         ])

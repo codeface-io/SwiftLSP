@@ -22,14 +22,14 @@ final class SwiftLSPTests: XCTestCase {
     func testGettingRequestMessageJSON() throws
     {
         let request = LSP.Message.Request(method: "someMethod",
-                                          params: .bool(true))
+                                          params: .object(["testBool": .bool(true)]))
         let requestMessage = LSP.Message.request(request)
         let requestMessageJSON = requestMessage.json()
         
         XCTAssertEqual(requestMessageJSON.jsonrpc, .string("2.0"))
         try testMessageJSONHasUUIDBasedID(requestMessageJSON)
         XCTAssertEqual(requestMessageJSON.method, .string("someMethod"))
-        XCTAssertEqual(requestMessageJSON.params, .bool(true))
+        XCTAssertEqual(requestMessageJSON.params, .dictionary(["testBool": .bool(true)]))
         XCTAssertNil(requestMessageJSON.bullshit)
     }
     
@@ -99,7 +99,7 @@ final class SwiftLSPTests: XCTestCase {
         
         guard case .response(let response) = responseMessage else
         {
-            throw "Message from request message JSON is not a request message"
+            throw "Message from response message JSON is not a response message"
         }
         
         XCTAssertEqual(response.id, .value(.string("someID")))
@@ -121,11 +121,29 @@ final class SwiftLSPTests: XCTestCase {
         
         guard case .response(let response) = responseMessage else
         {
-            throw "Message from request message JSON is not a request message"
+            throw "Message from response message JSON is not a response message"
         }
         
         XCTAssertEqual(response.id, .value(.string("someID")))
         XCTAssertEqual(response.result, .failure(errorResult))
+    }
+    
+    func testMakingNotificationMessageFromJSON() throws
+    {
+        let notificationMessageJSON = JSON.dictionary([
+            "method": .string("someMethod"),
+            "params": .dictionary(["testNumber": .int(123)])
+        ])
+        
+        let notificationMessage = try LSP.Message(notificationMessageJSON)
+        
+        guard case .notification(let notification) = notificationMessage else
+        {
+            throw "Message from notification message JSON is not a notification message"
+        }
+        
+        XCTAssertEqual(notification.method, "someMethod")
+        XCTAssertEqual(notification.params, .object(["testNumber": .int(123)]))
     }
     
     // MARK: - Message Data
