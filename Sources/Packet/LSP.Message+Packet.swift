@@ -4,11 +4,11 @@ extension LSP.Message
 {
     public init(_ packet: LSP.Packet) throws
     {
-        self = try Self(packet.content())
+        self = try Self(packet.content)
     }
     
     public func packet() throws -> LSP.Packet
     {
-        LSP.Packet(content: try encode())
+        LSP.Packet(withContent: try encode())
     }
 }

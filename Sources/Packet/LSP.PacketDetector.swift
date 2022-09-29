@@ -27,10 +27,10 @@ extension LSP
         private func removeLSPPacketFromQueue() -> Packet?
         {
             guard !queue.isEmpty,
-                  let packet = try? Packet(parsing: queue)
+                  let packet = try? Packet(parsingPrefixOf: queue)
             else { return nil }
             
-            queue.removeFirst(packet.data.count)
+            queue.removeFirst(packet.length)
             queue.resetIndices()
             
             return packet

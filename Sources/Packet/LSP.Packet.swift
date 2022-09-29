@@ -1,110 +1,107 @@
 import Foundation
 import SwiftyToolz
 
-extension LSP
+public extension LSP
 {
-    public struct Packet
+    struct Packet
     {
-        init(parsing data: Data) throws
+        public init(parsingPrefixOf data: Data) throws
         {
-            guard !data.isEmpty else { throw "Data is empty" }
-            
-            guard let header = Self.header(fromBeginningOf: data) else
-            {
-                throw "Data doesn't start with header:\n\(data.utf8String!)"
-            }
-            
-            guard let contentLength = Self.contentLength(fromHeader: header) else
-            {
-                throw "Header declares no content length"
-            }
-            
-            let packetLength = header.count + Self.headerContentSeparator.count + contentLength
-            
-            guard packetLength <= data.count else { throw "Incomplete packet data" }
-            
-            self.data = data[0 ..< packetLength]
+            (header, content) = try Parser.parseHeaderAndContent(fromPrefixOf: data)
         }
         
-        public init(content: Data)
+        public init(withContent content: Data)
         {
-            let header = "Content-Length: \(content.count)\r\n\r\n".data!
-            data = header + content
+            self.header = "Content-Length: \(content.count)".data!
+            self.content = content
         }
         
-        public func content() throws -> Data
-        {
-            guard let indexOfSeparator = Self.indexOfSeparator(in: data) else
-            {
-                throw "Invalid LSP packet data: No header/content separator"
-            }
-            
-            let indexOfContent = indexOfSeparator + Self.headerContentSeparator.count
-            
-            guard data.indices.contains(indexOfContent) else
-            {
-                throw "Invalid LSP packet data: No content"
-            }
-            
-            return data[indexOfContent...]
-        }
+        public var data: Data { header + separator + content }
+        public var length: Int { header.count + separator.count + content.count }
         
-        static func indexOfSeparator(in data: Data) -> Int?
-        {
-            guard !data.isEmpty else { return nil }
-            let lastDataIndex = data.count - 1
-            let lastPossibleSeparatorIndex = lastDataIndex - (headerContentSeparator.count - 1)
-            guard lastPossibleSeparatorIndex >= 0 else { return nil }
-            
-            for index in 0 ... lastPossibleSeparatorIndex
-            {
-                let potentialSeparator = data[index ..< index + headerContentSeparator.count]
-                if potentialSeparator == headerContentSeparator { return index }
-            }
-
-            return nil
-        }
+        public let header: Data
+        public var separator: Data { Parser.separator }
+        public let content: Data
         
-        static func header(fromBeginningOf data: Data) -> Data?
+        enum Parser
         {
-            guard !data.isEmpty else { return nil }
-            
-            guard let separatorIndex = indexOfSeparator(in: data) else
+            static func parseHeaderAndContent(fromPrefixOf data: Data) throws -> (Data, Data)
             {
-                log(warning: "Data contains no header/content separator:\n\(data.utf8String!)")
-                return nil
-            }
-            
-            guard separatorIndex > 0 else
-            {
-                log(error: "Empty header")
-                return nil
-            }
-            
-            return data[0 ..< separatorIndex]
-        }
-        
-        static func contentLength(fromHeader header: Data) -> Int?
-        {
-            let headerString = header.utf8String!
-            let headerLines = headerString.components(separatedBy: "\r\n")
-            
-            for headerLine in headerLines
-            {
-                if headerLine.hasPrefix("Content-Length")
+                guard !data.isEmpty else { throw "Data is empty" }
+                
+                guard let header = Parser.header(fromBeginningOf: data) else
                 {
-                    guard let lengthString = headerLine.components(separatedBy: ": ").last
-                    else { return nil }
-                    
-                    return Int(lengthString)
+                    throw "Data doesn't start with header:\n\(data.utf8String!)"
                 }
+                
+                guard let contentLength = Parser.contentLength(fromHeader: header) else
+                {
+                    throw "Header declares no content length"
+                }
+                
+                let headerPlusSeparatorLength = header.count + separator.count
+                let packetLength = headerPlusSeparatorLength + contentLength
+                
+                guard packetLength <= data.count else { throw "Incomplete packet data" }
+                
+                return (header, data[headerPlusSeparatorLength ..< packetLength])
             }
             
-            return nil
+            static func header(fromBeginningOf data: Data) -> Data?
+            {
+                guard !data.isEmpty else { return nil }
+                
+                guard let separatorIndex = indexOfSeparator(in: data) else
+                {
+                    log(warning: "Data contains no header/content separator:\n\(data.utf8String!)")
+                    return nil
+                }
+                
+                guard separatorIndex > 0 else
+                {
+                    log(error: "Empty header")
+                    return nil
+                }
+                
+                return data[0 ..< separatorIndex]
+            }
+            
+            static func indexOfSeparator(in data: Data) -> Int?
+            {
+                guard !data.isEmpty else { return nil }
+                let lastDataIndex = data.count - 1
+                let lastPossibleSeparatorIndex = lastDataIndex - (separator.count - 1)
+                guard lastPossibleSeparatorIndex >= 0 else { return nil }
+                
+                for index in 0 ... lastPossibleSeparatorIndex
+                {
+                    let potentialSeparator = data[index ..< index + separator.count]
+                    if potentialSeparator == separator { return index }
+                }
+
+                return nil
+            }
+            
+            static func contentLength(fromHeader header: Data) -> Int?
+            {
+                let headerString = header.utf8String!
+                let headerLines = headerString.components(separatedBy: "\r\n")
+                
+                for headerLine in headerLines
+                {
+                    if headerLine.hasPrefix("Content-Length")
+                    {
+                        guard let lengthString = headerLine.components(separatedBy: ": ").last
+                        else { return nil }
+                        
+                        return Int(lengthString)
+                    }
+                }
+                
+                return nil
+            }
+            
+            static let separator = Data([13, 10, 13, 10]) // ascii: "\r\n\r\n"
         }
-        
-        static let headerContentSeparator = Data([13, 10, 13, 10]) // ascii: "\r\n\r\n"
-        
-        public let data: Data
     }
 }
