@@ -21,10 +21,20 @@ extension LSP.Message
         
         if let result = messageJSON.result // success response
         {
+            guard messageJSON.method == nil else
+            {
+                throw "LSP message JSON has an id, a result and a method, so the message type is unclear."
+            }
+            
             self = .response(.init(id: nullableID, result: .success(result)))
         }
         else if let error = messageJSON.error  // error response
         {
+            guard messageJSON.method == nil else
+            {
+                throw "LSP message JSON has an id, an error and a method, so the message type is unclear."
+            }
+            
             self = .response(.init(id: nullableID,
                                    result: .failure(try .init(error))))
         }

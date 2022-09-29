@@ -14,6 +14,9 @@ extension LSP
         case request(Request)
         case notification(Notification)
         
+        /**
+         https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#responseMessage
+         */
         public struct Response
         {
             public init(id: NullableID, result: Result<JSON, ErrorResult>)
@@ -23,6 +26,10 @@ extension LSP
             }
             
             public let id: NullableID
+            
+            /**
+             Here are 2 minor deviations from the LSP specification: According to LSP 1) a result value can NOT be an array and 2) when an error is returned, there COULD still also be a result
+             */
             public let result: Result<JSON, ErrorResult>
             
             public struct ErrorResult: Error, Equatable
@@ -38,6 +45,9 @@ extension LSP
             case value(ID), null
         }
         
+        /**
+         https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#requestMessage
+         */
         public struct Request
         {
             public init(id: ID = ID(), method: String, params: Parameters?)
@@ -59,6 +69,9 @@ extension LSP
             case string(String), int(Int)
         }
         
+        /**
+         https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#notificationMessage
+         */
         public struct Notification
         {
             public init(method: String, params: Parameters?)
@@ -73,8 +86,7 @@ extension LSP
         
         public enum Parameters: Equatable
         {
-            case object([String: JSON])
-            case array([JSON])
+            case object([String: JSON]), array([JSON])
         }
     }
 }

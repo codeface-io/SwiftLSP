@@ -146,6 +146,20 @@ final class SwiftLSPTests: XCTestCase {
         XCTAssertEqual(notification.params, .object(["testNumber": .int(123)]))
     }
     
+    func testMakingMessageFromInvalidJSONFails()
+    {
+        XCTAssertThrowsError(try LSP.Message(JSON.dictionary([:])))
+        XCTAssertThrowsError(try LSP.Message(JSON.dictionary(["id": .int(123)])))
+        XCTAssertThrowsError(try LSP.Message(JSON.dictionary(["id": .null])))
+        XCTAssertThrowsError(try LSP.Message(JSON.dictionary(["id": .null,
+                                                              "method": .string("someMethod")])))
+        
+        // if it has id, method AND result, it's not clear whether it's a request or a response
+        XCTAssertThrowsError(try LSP.Message(JSON.dictionary(["id": .int(123),
+                                                              "method": .string("someMethod"),
+                                                              "result": .dictionary(["resultInt": .int(42)])])))
+    }
+    
     // MARK: - Message Data
     
     func testDecodingMessageFromData() throws {
