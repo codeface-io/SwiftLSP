@@ -9,6 +9,6 @@ extension LSP.Message
     
     public func packet() throws -> LSP.Packet
     {
-        LSP.Packet(withContent: try encode())
+        try LSP.Packet(withContent: encode())
     }
 }

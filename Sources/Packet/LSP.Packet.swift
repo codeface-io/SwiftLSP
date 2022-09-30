@@ -10,8 +10,9 @@ public extension LSP
             (header, content) = try Parser.parseHeaderAndContent(fromPrefixOf: data)
         }
         
-        public init(withContent content: Data)
+        public init(withContent content: Data) throws
         {
+            try Parser.ensureDataIsValidContent(content)
             self.header = "Content-Length: \(content.count)".data!
             self.content = content
         }
@@ -23,7 +24,7 @@ public extension LSP
         public var separator: Data { Parser.separator }
         public let content: Data
         
-        enum Parser
+        private enum Parser
         {
             static func parseHeaderAndContent(fromPrefixOf data: Data) throws -> (Data, Data)
             {
@@ -44,10 +45,18 @@ public extension LSP
                 
                 guard packetLength <= data.count else { throw "Incomplete packet data" }
                 
-                return (header, data[headerPlusSeparatorLength ..< packetLength])
+                let content = data[headerPlusSeparatorLength ..< packetLength]
+                try ensureDataIsValidContent(content)
+                
+                return (header, content)
             }
             
-            static func header(fromBeginningOf data: Data) -> Data?
+            static func ensureDataIsValidContent(_ content: Data) throws
+            {
+                _ = try Message(content)
+            }
+            
+            private static func header(fromBeginningOf data: Data) -> Data?
             {
                 guard !data.isEmpty else { return nil }
                 
@@ -66,7 +75,7 @@ public extension LSP
                 return data[0 ..< separatorIndex]
             }
             
-            static func indexOfSeparator(in data: Data) -> Int?
+            private static func indexOfSeparator(in data: Data) -> Int?
             {
                 guard !data.isEmpty else { return nil }
                 let lastDataIndex = data.count - 1
@@ -82,7 +91,7 @@ public extension LSP
                 return nil
             }
             
-            static func contentLength(fromHeader header: Data) -> Int?
+            private static func contentLength(fromHeader header: Data) -> Int?
             {
                 let headerString = header.utf8String!
                 let headerLines = headerString.components(separatedBy: "\r\n")
@@ -101,7 +110,7 @@ public extension LSP
                 return nil
             }
             
-            static let separator = Data([13, 10, 13, 10]) // ascii: "\r\n\r\n"
+            fileprivate static let separator = Data([13, 10, 13, 10]) // ascii: "\r\n\r\n"
         }
     }
 }
