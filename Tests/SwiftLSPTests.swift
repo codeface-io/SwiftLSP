@@ -188,4 +188,34 @@ final class SwiftLSPTests: XCTestCase {
         XCTAssertThrowsError(try LSP.Packet(withContent: messageJSONString.removing("}").data!))
         XCTAssertThrowsError(try LSP.Packet(parsingPrefixOf: messageJSONString.data!))
     }
+    
+    // MARK: - Message Packet Detector
+    
+    func testPacketDetector() {
+        let detector = LSP.PacketDetector()
+        var detectedPackets = [LSP.Packet]()
+        detector.didDetect = { detectedPackets += $0 }
+        
+        let header = "Content-Length: 40".data!
+        let separator = "\r\n\r\n".data!
+        let messageJSON = #"{"jsonrpc":"2.0", "method":"someMethod"}"#.data!
+        
+        detector.read(header)
+        XCTAssertEqual(detectedPackets.count, 0)
+        
+        detector.read(separator)
+        XCTAssertEqual(detectedPackets.count, 0)
+        
+        detector.read(messageJSON)
+        XCTAssertEqual(detectedPackets.count, 1)
+        
+        detector.read(header)
+        XCTAssertEqual(detectedPackets.count, 1)
+        
+        detector.read(separator)
+        XCTAssertEqual(detectedPackets.count, 1)
+        
+        detector.read(messageJSON + Data(count: 10))
+        XCTAssertEqual(detectedPackets.count, 2)
+    }
 }
