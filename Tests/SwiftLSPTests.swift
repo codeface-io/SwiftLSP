@@ -172,7 +172,7 @@ final class SwiftLSPTests: XCTestCase {
         XCTAssertEqual(message, messageDecodedAgain)
     }
     
-    // MARK: - Message Packet
+    // MARK: - Packet
     
     func testPacket() throws {
         let messageJSONString = #"{"jsonrpc":"2.0", "method":"someMethod"}"#
@@ -189,7 +189,7 @@ final class SwiftLSPTests: XCTestCase {
         XCTAssertThrowsError(try LSP.Packet(parsingPrefixOf: messageJSONString.data!))
     }
     
-    // MARK: - Message Packet Detector
+    // MARK: - Packet Detector
     
     func testPacketDetector() {
         let detector = LSP.PacketDetector()
@@ -217,5 +217,14 @@ final class SwiftLSPTests: XCTestCase {
         
         detector.read(messageJSON + Data(count: 10))
         XCTAssertEqual(detectedPackets.count, 2)
+    }
+    
+    // MARK: - LSP Language Identifier
+    
+    func testLanguageIdentifier() {
+        XCTAssertEqual(LSP.LanguageIdentifier(languageName: "Swift").string, "swift")
+        XCTAssertEqual(LSP.LanguageIdentifier(languageName: "python").string, "python")
+        XCTAssertEqual(LSP.LanguageIdentifier(languageName: "C++").string, "cpp")
+        XCTAssertEqual(LSP.LanguageIdentifier(languageName: "C#").string, "csharp")
     }
 }
