@@ -18,27 +18,13 @@ Some context and essential types:
 
 ![architecture](Documentation/architecture.jpg)
 
-The following are architecture diagrams of the top-level source folders, generated with the [Codeface.io](https://www.codeface.io) app:
-
-### SwiftLSP
+Internal architecture (composition and essential dependencies) of the top-level source folder:
 
 ![](Documentation/SwiftLSP.png)
 
-### Use Cases
+The above image was generated with the [codeface.io app](https://codeface.io).
 
-![](Documentation/UseCases.png)
 
-### Server Communication
-
-![](Documentation/ServerCommunication.png)
-
-### Packets
-
-![](Documentation/Packets.png)
-
-### Message
-
-![](Documentation/Message.png)
 
 
 
