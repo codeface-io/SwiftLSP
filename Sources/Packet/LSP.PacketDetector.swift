@@ -12,9 +12,9 @@ extension LSP
         
         public func read(_ data: Data)
         {
-            queue += data
+            buffer += data
             
-            while !queue.isEmpty, let lspPacket = removeLSPPacketFromQueue()
+            while !buffer.isEmpty, let lspPacket = removeLSPPacketFromBuffer()
             {
                 didDetect(lspPacket)
             }
@@ -22,21 +22,21 @@ extension LSP
         
         public var didDetect: (Packet) -> Void = { _ in }
 
-        // MARK: - Data Buffer Queue (Instance State)
+        // MARK: - Data Buffer
         
-        private func removeLSPPacketFromQueue() -> Packet?
+        private func removeLSPPacketFromBuffer() -> Packet?
         {
-            guard !queue.isEmpty,
-                  let packet = try? Packet(parsingPrefixOf: queue)
+            guard !buffer.isEmpty,
+                  let packet = try? Packet(parsingPrefixOf: buffer)
             else { return nil }
             
-            queue.removeFirst(packet.length)
-            queue.resetIndices()
+            buffer.removeFirst(packet.length)
+            buffer.resetIndices()
             
             return packet
         }
         
-        private var queue = Data()
+        private var buffer = Data()
     }
 }
 
