@@ -1,5 +1,6 @@
 import XCTest
 @testable import SwiftLSP
+import FoundationToolz
 import SwiftyToolz
 
 final class SwiftLSPTests: XCTestCase {
@@ -163,10 +164,9 @@ final class SwiftLSPTests: XCTestCase {
     // MARK: - Message Data
     
     func testConvertingBetweenMessageAndData() throws {
+        let messageJSONString = #"{"jsonrpc":"2.0","id":"C0DC9B39-5DCF-474A-BF78-7C18F37CFDEF","result":{"capabilities":{"hoverProvider":true,"implementationProvider":true,"colorProvider":true,"codeActionProvider":true,"foldingRangeProvider":true,"documentHighlightProvider":true,"definitionProvider":true,"documentSymbolProvider":true,"executeCommandProvider":{"commands":["semantic.refactor.command"]},"completionProvider":{"resolveProvider":false,"triggerCharacters":["."]},"referencesProvider":true,"textDocumentSync":{"willSave":true,"save":{"includeText":false},"openClose":true,"change":2,"willSaveWaitUntil":false},"workspaceSymbolProvider":true}}}"#
         
-        let messageString = #"{"jsonrpc":"2.0","id":"C0DC9B39-5DCF-474A-BF78-7C18F37CFDEF","result":{"capabilities":{"hoverProvider":true,"implementationProvider":true,"colorProvider":true,"codeActionProvider":true,"foldingRangeProvider":true,"documentHighlightProvider":true,"definitionProvider":true,"documentSymbolProvider":true,"executeCommandProvider":{"commands":["semantic.refactor.command"]},"completionProvider":{"resolveProvider":false,"triggerCharacters":["."]},"referencesProvider":true,"textDocumentSync":{"willSave":true,"save":{"includeText":false},"openClose":true,"change":2,"willSaveWaitUntil":false},"workspaceSymbolProvider":true}}}"#
-        
-        let message = try LSP.Message(messageString.data!)
+        let message = try LSP.Message(messageJSONString.data!)
         let encodedMessage = try message.encode()
         let messageDecodedAgain = try LSP.Message(encodedMessage)
         XCTAssertEqual(message, messageDecodedAgain)
@@ -174,5 +174,18 @@ final class SwiftLSPTests: XCTestCase {
     
     // MARK: - Message Packet
     
-    
+    func testPacket() throws {
+        let messageJSONString = #"{"jsonrpc":"2.0", "method":"someMethod"}"#
+        let packet1 = try LSP.Packet(withContent: messageJSONString.data!)
+        _ = try LSP.Message(packet1)
+        
+        let packetBufferString = "Content-Length: 40\r\n\r\n" + messageJSONString + "Next packet or other data"
+        let packet2 = try LSP.Packet(parsingPrefixOf: packetBufferString.data!)
+        _ = try LSP.Message(packet2)
+        
+        XCTAssertThrowsError(try LSP.Packet(withContent: Data()))
+        XCTAssertThrowsError(try LSP.Packet(withContent: (messageJSONString + "{}").data!))
+        XCTAssertThrowsError(try LSP.Packet(withContent: messageJSONString.removing("}").data!))
+        XCTAssertThrowsError(try LSP.Packet(parsingPrefixOf: messageJSONString.data!))
+    }
 }

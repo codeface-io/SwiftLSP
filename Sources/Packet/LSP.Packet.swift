@@ -12,7 +12,7 @@ public extension LSP
         
         public init(withContent content: Data) throws
         {
-            try Parser.ensureDataIsValidContent(content)
+            try Parser.verify(content: content)
             self.header = "Content-Length: \(content.count)".data!
             self.content = content
         }
@@ -46,12 +46,12 @@ public extension LSP
                 guard packetLength <= data.count else { throw "Incomplete packet data" }
                 
                 let content = data[headerPlusSeparatorLength ..< packetLength]
-                try ensureDataIsValidContent(content)
+                try verify(content: content)
                 
                 return (header, content)
             }
             
-            static func ensureDataIsValidContent(_ content: Data) throws
+            static func verify(content: Data) throws
             {
                 _ = try Message(content)
             }

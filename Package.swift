@@ -28,7 +28,7 @@ let package = Package(
         ),
         .testTarget(
             name: "SwiftLSPTests",
-            dependencies: ["SwiftLSP"],
+            dependencies: ["SwiftLSP", "FoundationToolz", "SwiftyToolz"],
             path: "Tests"
         ),
     ]
