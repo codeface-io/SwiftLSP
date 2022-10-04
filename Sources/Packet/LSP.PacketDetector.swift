@@ -13,6 +13,11 @@ extension LSP
             didDetect = handleDetectedPacket
         }
         
+        public func read(_ byte: Byte)
+        {
+            read(Data([byte]))
+        }
+        
         public func read(_ data: Data)
         {
             buffer += data

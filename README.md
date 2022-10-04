@@ -58,7 +58,7 @@ SwiftLSP can parse an `LSP.Packet` from the beginning of a `Data` instance:
 let dataStartingWithPacket = packetTotalData + "Some other data".data(using: .utf8)!
 let detectedPacket = try LSP.Packet(parsingPrefixOf: dataStartingWithPacket)
 
-// now parsedPacket == myRequestMessagePacket
+// now detectedPacket == myRequestMessagePacket
 ```
 
 SwiftLSP also offers the `LSP.PacketDetector` for parsing a stream of `Data` incrementally:
@@ -71,7 +71,7 @@ let detector = LSP.PacketDetector { packet in
 }
 
 for byte in dataStartingWithPacket {
-    detector.read(Data([byte]))
+    detector.read(byte)
 }
 
 // now streamedPacket == myRequestMessagePacket

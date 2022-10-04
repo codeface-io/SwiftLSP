@@ -37,7 +37,7 @@ final class SwiftLSPTests: XCTestCase {
         }
         
         for byte in dataStartingWithPacket {
-            detector.read(Data([byte]))
+            detector.read(byte)
         }
         
         XCTAssertEqual(streamedPacket, myRequestMessagePacket)
