@@ -8,7 +8,7 @@ SwiftLSP offers a quite dynamic Swift representation of the [LSP (Language Serve
 
 Since the LSP standard defines a complex amorphous multitude of valid JSON objects, it doesn't exactly lend itself to being represented as a strict type system that would mirror the standard down to every permutation and property. So SwiftLSP is strictly typed at the higher level of LSP messages but falls back onto a more dynamic and flexible JSON representation for the details. The strict typing can easily be expanded on client demand.
 
-## Code Examples
+## How?
 
 Some of these examples build upon preceding ones, so it's best to read them from the beginning.
 
@@ -33,7 +33,7 @@ let myRequestMessageDecoded = try LSP.Message(myRequestMessageEncoded)
 
 ### Wrap Messages in Packets
 
-To send LSP messages via data channels, the standard defines how to [wrap each message](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#baseProtocol) in what we call an `LSP.Packet`, which holds the `Data`  of its `header`- an `content` part.
+To send LSP messages via data channels, the standard defines how to [wrap each message](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#baseProtocol) in what we call an `LSP.Packet`, which holds the `Data`  of its `header`- and `content` part.
 
 ```swift
 let myRequestMessagePacket = try LSP.Packet(myRequestMessage)
@@ -48,7 +48,7 @@ let packetTotalData = myRequestMessagePacket.data    // Data
 let myRequestMessageUnpacked = try myRequestMessagePacket.message()  // LSP.Message
 ```
 
-### Extract LSP Packets From Data
+### Extract Packets From Data
 
 A client talking to an LSP server might need to extract `LSP.Packet`s from the server's output `Data` stream.
 
@@ -81,9 +81,10 @@ for byte in dataStartingWithPacket {
 
 Beyond what the examples above have touched, SwiftLSP also helps with:
 
+* Creating messages for specific use cases (initialize server, request symbols, request references ...) 
 * Launching an LSP server executable
 * Matching response messages to request messages
-* Making requests to an LSP Server through `async` **functions**
+* Making requests to an LSP Server through `async` functions
 * Using an LSP Server via WebSocket
 
 ## Architecture
