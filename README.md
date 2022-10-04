@@ -1,6 +1,10 @@
 # SwiftLSP
 
-... employs a quite dynamic Swift representation of the [LSP (Language Server Protocol)](https://microsoft.github.io/language-server-protocol) and helps with:
+👩🏻‍🚀 *This project [is still a tad experimental](#development-status). Contributors and pioneers welcome!*
+
+## What?
+
+SwiftLSP employs a quite dynamic Swift representation of the [LSP (Language Server Protocol)](https://microsoft.github.io/language-server-protocol) and helps with:
 
 * Launching an LSP server executable
 * Extracting LSP Packets from a data stream
@@ -22,11 +26,10 @@ Internal architecture (composition and essential dependencies) of the top-level 
 
 ![](Documentation/SwiftLSP.png)
 
-The above image was generated with the [codeface.io app](https://codeface.io).
+The above image was generated with the [codeface app](https://codeface.io).
 
+## Development Status
 
+From version/tag 0.1.0 on, SwiftLSP adheres to [semantic versioning](https://semver.org). So until we've reached 1.0.0, its API may still break frequently, but this will be expressed in version bumps.
 
-
-
-
-
+SwiftLSP is already being used in production, but [Codeface](https://codeface.io) is still its primary client. SwiftLSP will move to version 1.0.0 as soon as its basic practicality and conceptual soundness have been validated by serving multiple real-world clients.
