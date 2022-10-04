@@ -3,7 +3,7 @@ import SwiftyToolz
 
 public extension LSP
 {
-    struct Packet
+    struct Packet: Equatable
     {
         public init(parsingPrefixOf data: Data) throws
         {

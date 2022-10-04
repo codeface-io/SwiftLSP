@@ -7,6 +7,42 @@ final class SwiftLSPTests: XCTestCase {
     
     // MARK: - Message
     
+    func testCodeExamplesFromREADME() throws {
+        let myRequest = LSP.Request(method: "myMethod", params: nil)
+        let myRequestMessage = LSP.Message.request(myRequest)
+        
+        let myNotification = LSP.Notification(method: "myMethod", params: nil)
+        _ = LSP.Message.notification(myNotification)
+        
+        let myRequestMessageEncoded = try myRequestMessage.encode()  // Data
+        let myRequestMessageDecoded = try LSP.Message(myRequestMessageEncoded)
+        XCTAssertEqual(myRequestMessageDecoded, myRequestMessage)
+        
+        let myRequestMessagePacket = try LSP.Packet(myRequestMessage)
+        _ = myRequestMessagePacket.header   // Data
+        _ = myRequestMessagePacket.content  // Data
+        let packetTotalData = myRequestMessagePacket.data     // Data
+        
+        let myRequestMessageUnpacked = try myRequestMessagePacket.message()  // LSP.Message
+        XCTAssertEqual(myRequestMessageUnpacked, myRequestMessage)
+        
+        let dataStartingWithPacket = packetTotalData + "Some other data".data(using: .utf8)!
+        let parsedPacket = try LSP.Packet(parsingPrefixOf: dataStartingWithPacket)
+        XCTAssertEqual(parsedPacket, myRequestMessagePacket)
+        
+        var detectedPacket: LSP.Packet? = nil
+        
+        let detector = LSP.PacketDetector { packet in
+            detectedPacket = packet
+        }
+        
+        for byte in dataStartingWithPacket {
+            detector.read(Data([byte]))
+        }
+        
+        XCTAssertEqual(detectedPacket, myRequestMessagePacket)
+    }
+    
     func testNewRequestMessageHasUUIDasID() throws {
         
         let message = LSP.Message.Request(method: "method", params: nil)
@@ -177,11 +213,11 @@ final class SwiftLSPTests: XCTestCase {
     func testPacket() throws {
         let messageJSONString = #"{"jsonrpc":"2.0", "method":"someMethod"}"#
         let packet1 = try LSP.Packet(withContent: messageJSONString.data!)
-        _ = try LSP.Message(packet1)
+        _ = try packet1.message()
         
         let packetBufferString = "Content-Length: 40\r\n\r\n" + messageJSONString + "Next packet or other data"
         let packet2 = try LSP.Packet(parsingPrefixOf: packetBufferString.data!)
-        _ = try LSP.Message(packet2)
+        _ = try packet2.message()
         
         XCTAssertThrowsError(try LSP.Packet(withContent: Data()))
         XCTAssertThrowsError(try LSP.Packet(withContent: (messageJSONString + "{}").data!))
@@ -192,9 +228,8 @@ final class SwiftLSPTests: XCTestCase {
     // MARK: - Packet Detector
     
     func testPacketDetector() {
-        let detector = LSP.PacketDetector()
         var detectedPackets = [LSP.Packet]()
-        detector.didDetect = { detectedPackets += $0 }
+        let detector = LSP.PacketDetector { detectedPackets += $0 }
         
         let header = "Content-Length: 40".data!
         let separator = "\r\n\r\n".data!

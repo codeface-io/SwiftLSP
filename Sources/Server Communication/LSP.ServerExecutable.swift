@@ -11,17 +11,14 @@ public extension LSP {
         public override init(config: Configuration) throws {
             try super.init(config: config)
             
-            setupPacketOutput()
+            didSendOutput = { [weak self] in self?.packetDetector.read($0) }
         }
         
         // MARK: - LSP Packet Output
         
-        private func setupPacketOutput() {
-            didSendOutput = { [weak self] in self?.packetDetector.read($0) }
-            packetDetector.didDetect = { [weak self] in self?.didSend($0) }
-        }
-        
-        private let packetDetector = LSP.PacketDetector()
+        private lazy var packetDetector: LSP.PacketDetector = {
+            .init { [weak self] in self?.didSend($0) }
+        }()
         
         public var didSend: (LSP.Packet) -> Void = { _ in
             log(warning: "LSP server did send lsp packet, but handler has not been set")

@@ -4,17 +4,83 @@
 
 ## What?
 
-SwiftLSP employs a quite dynamic Swift representation of the [LSP (Language Server Protocol)](https://microsoft.github.io/language-server-protocol) and helps with:
+SwiftLSP offers a quite dynamic Swift representation of the [LSP (Language Server Protocol)](https://microsoft.github.io/language-server-protocol) and helps with many related use cases. It is foundational for [LSPService](https://github.com/codeface-io/LSPService) and [LSPServiceKit](https://github.com/codeface-io/LSPServiceKit).
+
+Since the LSP standard defines a complex amorphous multitude of valid JSON objects, it doesn't exactly lend itself to being represented as a strict type system that would mirror the standard down to every permutation and property. So SwiftLSP is strictly typed at the higher level of LSP messages but falls back onto a more dynamic and flexible JSON representation for the details. The strict typing can easily be expanded on client demand.
+
+## Code Examples
+
+Some of these examples build upon preceding ones, so it's best to read them from the beginning.
+
+### Create Messages
+
+```swift
+let myRequest = LSP.Request(method: "myMethod", params: nil)
+let myRequestMessage = LSP.Message.request(myRequest)
+
+let myNotification = LSP.Notification(method: "myMethod", params: nil)
+let myNotificationMessage = LSP.Message.notification(myNotification)
+```
+
+### Encode and Decode Messages
+
+SwiftLSP encodes LSP messages with the [LSP-conform JSON-RPC encoding](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#abstractMessage).
+
+```swift
+let myRequestMessageEncoded = try myRequestMessage.encode()  // Data
+let myRequestMessageDecoded = try LSP.Message(myRequestMessageEncoded)
+```
+
+### Wrap Messages in Packets
+
+To send LSP messages via data channels, the standard defines how to [wrap each message](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#baseProtocol) in what we call an `LSP.Packet`, which holds the `Data`  of its `header`- an `content` part.
+
+```swift
+let myRequestMessagePacket = try LSP.Packet(myRequestMessage)
+let packetHeader = myRequestMessagePacket.header     // Data
+let packetContent = myRequestMessagePacket.content   // Data
+let packetTotalData = myRequestMessagePacket.data    // Data
+```
+
+### Extract Messages From Packets
+
+```swift
+let myRequestMessageUnpacked = try myRequestMessagePacket.message()  // LSP.Message
+```
+
+### Extract LSP Packets From Data
+
+A client talking to an LSP server might need to extract `LSP.Packet`s from the server's output `Data` stream.
+
+SwiftLSP can detect an `LSP.Packet` at the beginning of any `Data` instance and also offers the `LSP.PacketDetector` for parsing a stream of `Data` incrementally.
+
+```swift
+let dataStartingWithPacket = packetTotalData + "Some other data".data(using: .utf8)!
+let parsedPacket = try LSP.Packet(parsingPrefixOf: dataStartingWithPacket)
+
+// now parsedPacket == myRequestMessagePacket
+
+var detectedPacket: LSP.Packet? = nil
+        
+let detector = LSP.PacketDetector { packet in
+    detectedPacket = packet
+}
+
+for byte in dataStartingWithPacket {
+    detector.read(Data([byte]))
+}
+
+// now detectedPacket == myRequestMessagePacket
+```
+
+## More Use Cases
+
+Beyond what the examples above have touched, SwiftLSP also helps with:
 
 * Launching an LSP server executable
-* Extracting LSP Packets from a data stream
-* Encoding and decoding LSP messages
-* Representing, creating and working with LSP messages
 * Matching response messages to request messages
-* Exchanging LSP Messages with an LSP Server
-* Exchanging LSP Messages with an LSP Server via WebSocket
-
-SwiftLSP is the basis for [LSPService](https://github.com/codeface-io/LSPService) and [LSPServiceKit](https://github.com/codeface-io/LSPServiceKit).
+* Making requests to an LSP Server through `async` **functions**
+* Using an LSP Server via WebSocket
 
 ## Architecture
 

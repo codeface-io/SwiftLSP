@@ -59,7 +59,7 @@ public extension LSP
         
         public func sendToServer(_ message: LSP.Message) async throws
         {
-            try await webSocket.send(try message.packet().data)
+            try await webSocket.send(try LSP.Packet(message).data)
         }
         
         // MARK: - Manage Connection

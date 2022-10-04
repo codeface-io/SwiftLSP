@@ -8,7 +8,10 @@ extension LSP
     {
         // MARK: - Public API
         
-        public init() {}
+        public init(_ handleDetectedPacket: @escaping (Packet) -> Void)
+        {
+            didDetect = handleDetectedPacket
+        }
         
         public func read(_ data: Data)
         {
@@ -20,7 +23,7 @@ extension LSP
             }
         }
         
-        public var didDetect: (Packet) -> Void = { _ in }
+        public var didDetect: (Packet) -> Void
 
         // MARK: - Data Buffer
         
