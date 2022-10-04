@@ -52,25 +52,29 @@ let myRequestMessageUnpacked = try myRequestMessagePacket.message()  // LSP.Mess
 
 A client talking to an LSP server might need to extract `LSP.Packet`s from the server's output `Data` stream.
 
-SwiftLSP can detect an `LSP.Packet` at the beginning of any `Data` instance and also offers the `LSP.PacketDetector` for parsing a stream of `Data` incrementally.
+SwiftLSP can parse an `LSP.Packet` from the beginning of a `Data` instance:
 
 ```swift
 let dataStartingWithPacket = packetTotalData + "Some other data".data(using: .utf8)!
-let parsedPacket = try LSP.Packet(parsingPrefixOf: dataStartingWithPacket)
+let detectedPacket = try LSP.Packet(parsingPrefixOf: dataStartingWithPacket)
 
 // now parsedPacket == myRequestMessagePacket
+```
 
-var detectedPacket: LSP.Packet? = nil
+SwiftLSP also offers the `LSP.PacketDetector` for parsing a stream of `Data` incrementally:
+
+```swift
+var streamedPacket: LSP.Packet? = nil
         
 let detector = LSP.PacketDetector { packet in
-    detectedPacket = packet
+    streamedPacket = packet
 }
 
 for byte in dataStartingWithPacket {
     detector.read(Data([byte]))
 }
 
-// now detectedPacket == myRequestMessagePacket
+// now streamedPacket == myRequestMessagePacket
 ```
 
 ## More Use Cases

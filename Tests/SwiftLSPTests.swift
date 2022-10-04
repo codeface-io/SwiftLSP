@@ -27,20 +27,20 @@ final class SwiftLSPTests: XCTestCase {
         XCTAssertEqual(myRequestMessageUnpacked, myRequestMessage)
         
         let dataStartingWithPacket = packetTotalData + "Some other data".data(using: .utf8)!
-        let parsedPacket = try LSP.Packet(parsingPrefixOf: dataStartingWithPacket)
-        XCTAssertEqual(parsedPacket, myRequestMessagePacket)
+        let detectedPacket = try LSP.Packet(parsingPrefixOf: dataStartingWithPacket)
+        XCTAssertEqual(detectedPacket, myRequestMessagePacket)
         
-        var detectedPacket: LSP.Packet? = nil
+        var streamedPacket: LSP.Packet? = nil
         
         let detector = LSP.PacketDetector { packet in
-            detectedPacket = packet
+            streamedPacket = packet
         }
         
         for byte in dataStartingWithPacket {
             detector.read(Data([byte]))
         }
         
-        XCTAssertEqual(detectedPacket, myRequestMessagePacket)
+        XCTAssertEqual(streamedPacket, myRequestMessagePacket)
     }
     
     func testNewRequestMessageHasUUIDasID() throws {
