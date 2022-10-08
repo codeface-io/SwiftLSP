@@ -3,7 +3,7 @@ import Foundation
 public extension LSP.Packet
 {
     /**
-     Creates an `LSP.Packet` that wraps an encoded `LSP.Message` for data transport
+     Creates a ``LSP/Packet`` that wraps an encoded ``LSP/Message`` for data transport
      
      - Parameter message: The LSP message to encode for data transport
      */
@@ -13,11 +13,11 @@ public extension LSP.Packet
     }
     
     /**
-     Extracts the `LSP.Message` encoded in the packet's `content` part
+     Extracts the ``LSP/Message`` encoded in the packet's `content` part
      
      See the [LSP content part specification](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#contentPart).
     
-     - Returns: The `LSP.Message` encoded in the packet's `content` part
+     - Returns: The ``LSP/Message`` encoded in the packet's `content` part
      */
     func message() throws -> LSP.Message
     {

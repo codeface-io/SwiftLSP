@@ -22,7 +22,7 @@ extension LSP
         /**
          An LSP response message sent from an LSP server t a client in response to an LSP request message.
          
-         Its `id` should match the `id` of the corresponding `Request` that triggered this response.
+         Its `id` should match the `id` of the corresponding ``Request`` that triggered this response.
          
          See <https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#responseMessage>
          */

@@ -4,7 +4,7 @@ import SwiftyToolz
 public extension LSP {
 
     /**
-     Represents an LSP server's executable file and allows to receive LSP messages from it
+     Represents an LSP server's executable file and allows to receive ``LSP/Message``s from it
      
      This does not work in a sandboxed app!
      */

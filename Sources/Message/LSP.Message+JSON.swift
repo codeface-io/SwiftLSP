@@ -3,7 +3,7 @@ import SwiftyToolz
 extension LSP.Message
 {
     /**
-     Create an LSP message from JSON
+     Create a ``LSP/Message`` from `JSON`
      
      Throws an error if the JSON does not form a valid LSP message according to the LSP specification.
      

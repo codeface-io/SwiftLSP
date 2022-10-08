@@ -7,11 +7,13 @@ extension LSP.ServerCommunicationHandler
     /**
      Requests a value of a generic type from the connected LSP server
      
-     When the LSP server produces an LSP response error (see [its specification](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#responseError)), the thrown error is of type `LSP.Message.Response.ErrorResult` a.k.a. `LSP.ErrorResult`. So the caller should check whether thrown errors are indeed `LSP.ErrorResult`s.
+     When the LSP server produces an LSP response error (see [its specification](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#responseError)), the thrown error is a ``LSP/Message/Response/ErrorResult`` a.k.a. `LSP.ErrorResult`. So the caller should check whether thrown errors are indeed `LSP.ErrorResult`s.
      
      - Parameter request: The LSP request message to send to the LSP server
      
      - Returns: The value returned from the LSP server when no error occured. The value's type must be generically determined by the caller.
+     
+     - Throws: If the LSP server sends a [response error message](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#responseError) in return, the error is a ``LSP/Message/Response/ErrorResult``, otherwise it's any `Error`.
      */
     public func request<Value: Decodable>(_ request: LSP.Request) async throws -> Value
     {
@@ -23,16 +25,16 @@ extension LSP
 {
     public typealias Server = ServerCommunicationHandler
     
-    /// An actor for easy communication with an LSP server via an `LSPServerConnection`
+    /// An actor for easy communication with an LSP server via an ``LSPServerConnection``
     public actor ServerCommunicationHandler
     {
         // MARK: - Initialize
         
         /**
-         Create an `LSP.ServerCommunicationHandler`
+         Create a ``LSP/ServerCommunicationHandler``
          
          - Parameters:
-             - connection: An `LSPServerConnection` for talking to an LSP server
+             - connection: An ``LSPServerConnection`` for talking to an LSP server
              - languageName: The name of the language whose identifier shall be set in requests
          */
         public init(connection: LSPServerConnection, languageName: String)
@@ -97,11 +99,14 @@ extension LSP
         /**
          Makes a request to the connected LSP server
          
-         When the LSP server produces an LSP response error (see [its specification](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#responseError)), the thrown error is of type `LSP.Message.Response.ErrorResult` a.k.a. `LSP.ErrorResult`. So the caller should check whether thrown errors are indeed `LSP.ErrorResult`s.
+         When the LSP server produces an LSP response error (see [its specification](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#responseError)), the thrown error is a ``LSP/Message/Response/ErrorResult`` a.k.a. `LSP.ErrorResult`. So the caller should check whether thrown errors are indeed `LSP.ErrorResult`s.
          
          - Parameter request: The LSP request message to send to the LSP server
          
          - Returns: The `JSON` value returned by the LSP server when no error occured. It corresponds to the `result` property in  [the specification of the LSP response message](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#responseMessage)
+         
+         
+         - Throws: If the LSP server sends a [response error message](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#responseError) in return, the error is a ``LSP/Message/Response/ErrorResult``, otherwise it's any `Error`.
          */
         public func request(_ request: Request) async throws -> JSON
         {
@@ -185,9 +190,9 @@ extension LSP
         // MARK: - Send Notification to LSP Server
         
         /**
-         Sends an LSP notification to the connected LSP server
+         Sends a ``LSP/Message/Notification`` to the connected LSP server
          
-         - Parameter notification: The `Message.Notification` to send to the LSP server
+         - Parameter notification: The ``LSP/Message/Notification`` to send to the LSP server
          */
         public func notify(_ notification: Message.Notification) async throws
         {

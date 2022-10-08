@@ -5,14 +5,14 @@ import SwiftyToolz
 extension LSP
 {
     /**
-     Parses `LSP.Packet`s from `Data`
+     Parses ``LSP/Packet``s from `Data`
      */
     public class PacketDetector
     {
         // MARK: - Public API
         
         /**
-         Creates an `LSP.PacketDetector` with a closure for handling detected `LSP.Packet`s
+         Creates a ``LSP/PacketDetector`` with a closure for handling detected ``LSP/Packet``s
          */
         public init(_ handleDetectedPacket: @escaping (Packet) -> Void)
         {
@@ -20,7 +20,7 @@ extension LSP
         }
         
         /**
-         Reads another Byte from a `Data` stream. Calls the given handler for new `LSP.Packet`s
+         Reads another Byte from a `Data` stream. Calls the given handler for new ``LSP/Packet``s
          
          Calls the handler provided via the initializer if the stream contains a new `LSP.Packet` since the last call of the handler
          */
@@ -30,7 +30,7 @@ extension LSP
         }
         
         /**
-         Reads another chunk of a `Data` stream. Calls the given handler for new `LSP.Packet`s
+         Reads another chunk of a `Data` stream. Calls the given handler for new ``LSP/Packet``s
          
          Calls the handler provided via the initializer once for each `LSP.Packet` in the stream since the last call of the handler
          */

@@ -4,14 +4,14 @@ import SwiftyToolz
 public extension LSP
 {
     /**
-     Wraps an LSP message on the data level and corresponds to the LSP "Base Protocol"
+     Wraps a ``LSP/Message`` on the data level and corresponds to the LSP "Base Protocol"
      
      See how [the LSP specifies its "Base Protocol"](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#baseProtocol).
      */
     struct Packet: Equatable
     {
         /**
-         Detects an `LSP.Packet` that starts at the beginning of a `Data` instance
+         Detects a ``LSP/Packet`` that starts at the beginning of a `Data` instance
         
          `LSP.Packet` wraps an LSP message on the level of data / data streams and corresponds to the LSP "Base Protocol". See how [the LSP specifies its "Base Protocol"](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#baseProtocol).
          - Parameter data: Data that presumably starts with an LSP-conform endoded `LSP.Packet`
@@ -22,7 +22,7 @@ public extension LSP
         }
         
         /**
-         Make an `LSP.Packet` from the given packet content data
+         Make a ``LSP/Packet`` from the given packet content data
          
          Throws an error if the given content data is not an LSP-conform encoding of a packet's content part. See the [LSP content part specification](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#contentPart).
          
