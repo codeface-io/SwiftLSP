@@ -4,9 +4,9 @@ import SwiftyToolz
 
 extension LSP.ServerCommunicationHandler
 {
-    public func request<Value: Decodable>(_ req: LSP.Message.Request) async throws -> Value
+    public func request<Value: Decodable>(_ request: LSP.Request) async throws -> Value
     {
-        try await request(req).decode()
+        try await self.request(request).decode()
     }
 }
 
@@ -76,49 +76,49 @@ extension LSP
         
         // MARK: - Make Async Requests to LSP Server
         
-        public func request(_ requestMessage: Message.Request) async throws -> JSON
+        public func request(_ request: Request) async throws -> JSON
         {
             async let json: JSON = withCheckedThrowingContinuation
             {
-                request in
+                continuation in
                 
                 Task
                 {
-                    [weak self] in await self?.save(request, for: requestMessage.id)
+                    [weak self] in await self?.save(continuation, for: request.id)
                 }
             }
             
             do
             {
-                try await connection.sendToServer(.request(requestMessage))
+                try await connection.sendToServer(.request(request))
             }
             catch
             {
-                removeRequest(for: requestMessage.id)
+                removeContinuation(for: request.id)
                 throw error
             }
             
             return try await json
         }
         
-        private func serverDidSend(_ response: Message.Response) async
+        private func serverDidSend(_ response: Response) async
         {
             switch response.id
             {
             case .value(let id):
-                guard let request = removeRequest(for: id) else
+                guard let continuation = removeContinuation(for: id) else
                 {
-                    log(error: "No matching request found")
+                    log(error: "No matching continuation found")
                     break
                 }
                 
                 switch response.result
                 {
                 case .success(let jsonResult):
-                    request.resume(returning: jsonResult)
+                    continuation.resume(returning: jsonResult)
                 case .failure(let errorResult):
                     // TODO: ensure clients actually try to cast thrown errors to LSP.ErrorResult
-                    request.resume(throwing: errorResult)
+                    continuation.resume(throwing: errorResult)
                 }
             case .null:
                 switch response.result
@@ -133,27 +133,27 @@ extension LSP
         
         private func cancelAllPendingRequests(with error: Error)
         {
-            for request in resquestsByMessageID.values
+            for continuation in continuationsByMessageID.values
             {
-                request.resume(throwing: error)
+                continuation.resume(throwing: error)
             }
             
-            resquestsByMessageID.removeAll()
+            continuationsByMessageID.removeAll()
         }
         
-        private func save(_ request: Request, for id: Message.ID)
+        private func save(_ continuation: Continuation, for id: Message.ID)
         {
-            resquestsByMessageID[id] = request
+            continuationsByMessageID[id] = continuation
         }
         
         @discardableResult
-        private func removeRequest(for id: Message.ID) -> Request?
+        private func removeContinuation(for id: Message.ID) -> Continuation?
         {
-            resquestsByMessageID.removeValue(forKey: id)
+            continuationsByMessageID.removeValue(forKey: id)
         }
         
-        private var resquestsByMessageID = [Message.ID: Request]()
-        private typealias Request = CheckedContinuation<JSON, Error>
+        private var continuationsByMessageID = [Message.ID: Continuation]()
+        private typealias Continuation = CheckedContinuation<JSON, Error>
         
         // MARK: - Send Notification to LSP Server
         

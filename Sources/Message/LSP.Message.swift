@@ -3,10 +3,10 @@ import SwiftyToolz
 
 extension LSP
 {
-    typealias Request = Message.Request
-    typealias Response = Message.Response
-    typealias ErrorResult = Message.Response.ErrorResult
-    typealias Notification = Message.Notification
+    public typealias Request = Message.Request
+    public typealias Response = Message.Response
+    public typealias ErrorResult = Message.Response.ErrorResult
+    public typealias Notification = Message.Notification
     
     /**
      https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#abstractMessage
