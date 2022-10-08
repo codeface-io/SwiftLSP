@@ -8,20 +8,17 @@ public extension LSP {
         
         // MARK: - Life Cycle
         
-        public override init(config: Configuration) throws {
+        public init(config: Configuration,
+                    handleLSPPacket: @escaping (LSP.Packet) -> Void) throws {
+            packetDetector = PacketDetector(handleLSPPacket)
             try super.init(config: config)
             
+            // TODO: output-, error- and termination handler should be passed to the Executable initializer directly! also to force they're being set or at least to force the client to make a conscious decision on wehther to set them
             didSendOutput = { [weak self] in self?.packetDetector.read($0) }
         }
         
         // MARK: - LSP Packet Output
         
-        private lazy var packetDetector: LSP.PacketDetector = {
-            .init { [weak self] in self?.didSend($0) }
-        }()
-        
-        public var didSend: (LSP.Packet) -> Void = { _ in
-            log(warning: "LSP server did send lsp packet, but handler has not been set")
-        }
+        private let packetDetector: LSP.PacketDetector
     }
 }

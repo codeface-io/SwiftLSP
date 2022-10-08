@@ -28,7 +28,7 @@ extension LSP
             }
         }
         
-        public var didDetect: (Packet) -> Void
+        private let didDetect: (Packet) -> Void
 
         // MARK: - Data Buffer
         
