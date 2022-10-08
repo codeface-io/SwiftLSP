@@ -78,6 +78,6 @@ public extension LSP
         
         // MARK: - WebSocket
         
-        public let webSocket: WebSocket
+        private let webSocket: WebSocket
     }
 }
