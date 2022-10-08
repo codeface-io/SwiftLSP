@@ -9,7 +9,9 @@ extension LSP
     public typealias Notification = Message.Notification
     
     /**
-     https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#abstractMessage
+     An LSP Message is either a request, a response or a notification.
+     
+     See <https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#abstractMessage>
      */
     public enum Message: Equatable
     {
@@ -18,7 +20,11 @@ extension LSP
         case notification(Notification)
         
         /**
-         https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#responseMessage
+         An LSP response message sent from an LSP server t a client in response to an LSP request message.
+         
+         Its `id` should match the `id` of the corresponding `Request` that triggered this response.
+         
+         See <https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#responseMessage>
          */
         public struct Response: Equatable
         {
@@ -43,13 +49,16 @@ extension LSP
             }
         }
         
+        /// An LSP message ID that can also be null
         public enum NullableID: Equatable
         {
             case value(ID), null
         }
         
         /**
-         https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#requestMessage
+         An LSP request message sent from a client to an LSPServer
+         
+         See <https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#requestMessage>
          */
         public struct Request: Equatable
         {
@@ -65,6 +74,7 @@ extension LSP
             public let params: JSON.Container?
         }
         
+        /// A basic LSP message ID is either a string or an integer
         public enum ID: Hashable
         {
             public init() { self = .string(UUID().uuidString) }
@@ -73,7 +83,9 @@ extension LSP
         }
         
         /**
-         https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#notificationMessage
+         An LSP notification message is sent between an LSPServer and its client
+         
+         See <https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#notificationMessage>
          */
         public struct Notification: Equatable
         {

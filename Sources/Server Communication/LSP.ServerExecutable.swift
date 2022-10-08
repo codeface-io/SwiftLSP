@@ -3,11 +3,18 @@ import SwiftyToolz
 
 public extension LSP {
 
-    /// This does not work in a sandboxed app!
+    /**
+     Represents an LSP server's executable file and allows to receive LSP messages from it
+     
+     This does not work in a sandboxed app!
+     */
     class ServerExecutable: Executable {
         
         // MARK: - Life Cycle
         
+        /**
+         Initializes with an `Executable.Configuration` and a message packet handler
+         */
         public init(config: Configuration,
                     handleLSPPacket: @escaping (LSP.Packet) -> Void) throws {
             packetDetector = PacketDetector(handleLSPPacket)

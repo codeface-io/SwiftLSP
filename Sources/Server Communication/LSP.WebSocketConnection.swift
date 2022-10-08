@@ -4,10 +4,15 @@ import SwiftyToolz
 
 public extension LSP
 {
+    /// An `LSPServerConnection` that uses a `WebSocket` to talk to an LSP server
+    ///
+    /// The client should set the four handlers defined by the protocol `LSPServerConnection`
     class WebSocketConnection: LSPServerConnection
     {
         // MARK: - Initialize
         
+        /// Initialize with a WebSocket
+        /// - Parameter webSocket: A WebSocket connected to an LSP server
         public init(webSocket: WebSocket)
         {
             self.webSocket = webSocket
@@ -57,6 +62,8 @@ public extension LSP
         public var serverDidSendNotification: (LSP.Message.Notification) -> Void = { _ in }
         public var serverDidSendErrorOutput: (String) -> Void = { _ in }
         
+        /// Send an `LSP.Message` via the data channel of the `WebSocket`
+        /// - Parameter message: The `LSP.Message` to send
         public func sendToServer(_ message: LSP.Message) async throws
         {
             try await webSocket.send(try LSP.Packet(message).data)

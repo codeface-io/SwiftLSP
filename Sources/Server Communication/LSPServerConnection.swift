@@ -1,3 +1,4 @@
+/// Interface defining the raw I/O capabilities of an LSP server
 public protocol LSPServerConnection: AnyObject
 {
     // MARK: - Communicate with the LSP Server

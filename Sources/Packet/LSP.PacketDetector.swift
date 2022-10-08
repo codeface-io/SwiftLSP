@@ -4,20 +4,36 @@ import SwiftyToolz
 
 extension LSP
 {
+    /**
+     Parses `LSP.Packet`s from `Data`
+     */
     public class PacketDetector
     {
         // MARK: - Public API
         
+        /**
+         Creates an `LSP.PacketDetector` with a closure for handling detected `LSP.Packet`s
+         */
         public init(_ handleDetectedPacket: @escaping (Packet) -> Void)
         {
             didDetect = handleDetectedPacket
         }
         
+        /**
+         Reads another Byte from a `Data` stream. Calls the given handler for new `LSP.Packet`s
+         
+         Calls the handler provided via the initializer if the stream contains a new `LSP.Packet` since the last call of the handler
+         */
         public func read(_ byte: Byte)
         {
             read(Data([byte]))
         }
         
+        /**
+         Reads another chunk of a `Data` stream. Calls the given handler for new `LSP.Packet`s
+         
+         Calls the handler provided via the initializer once for each `LSP.Packet` in the stream since the last call of the handler
+         */
         public func read(_ data: Data)
         {
             buffer += data

@@ -3,13 +3,31 @@ import SwiftyToolz
 
 public extension LSP
 {
+    /**
+     Wraps an LSP message on the data level and corresponds to the LSP "Base Protocol"
+     
+     See how [the LSP specifies its "Base Protocol"](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#baseProtocol).
+     */
     struct Packet: Equatable
     {
+        /**
+         Detects an `LSP.Packet` that starts at the beginning of a `Data` instance
+        
+         `LSP.Packet` wraps an LSP message on the level of data / data streams and corresponds to the LSP "Base Protocol". See how [the LSP specifies its "Base Protocol"](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#baseProtocol).
+         - Parameter data: Data that presumably starts with an LSP-conform endoded `LSP.Packet`
+         */
         public init(parsingPrefixOf data: Data) throws
         {
             (header, content) = try Parser.parseHeaderAndContent(fromPrefixOf: data)
         }
         
+        /**
+         Make an `LSP.Packet` from the given packet content data
+         
+         Throws an error if the given content data is not an LSP-conform encoding of a packet's content part. See the [LSP content part specification](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#contentPart).
+         
+         - Parameter content: LSP-conform JSON encoding of an LSP packet's content part
+         */
         public init(withContent content: Data) throws
         {
             try Parser.verify(content: content)
@@ -17,11 +35,27 @@ public extension LSP
             self.content = content
         }
         
+        /// The LSP-conform encoding of the whole packet
+        ///
+        /// See how [the LSP specifies its "Base Protocol"](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#baseProtocol).
         public var data: Data { header + separator + content }
+        
+        /// The length of the whole packet data in Bytes
         public var length: Int { header.count + separator.count + content.count }
         
+        /// The LSP-conform encoding of the packet's header part
+        ///
+        /// See the [LSP content part specification](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#headerPart).
         public let header: Data
+        
+        /// The LSP-conform encoding of the packet's header/content separator
+        ///
+        /// See how [the LSP specifies its "Base Protocol"](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#baseProtocol).
         public var separator: Data { Parser.separator }
+        
+        /// The LSP-conform encoding of the packet's content part
+        ///
+        /// See the [LSP content part specification](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#contentPart).
         public let content: Data
         
         private enum Parser

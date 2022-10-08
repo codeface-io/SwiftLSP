@@ -3,7 +3,11 @@ import SwiftyToolz
 extension LSP.Message
 {
     /**
-     Creates an LSP message from JSON. Throws an error if the JSON does not form a valid LSP message according to the LSP specification.
+     Create an LSP message from JSON
+     
+     Throws an error if the JSON does not form a valid LSP message according to the LSP specification.
+     
+     See <https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#contentPart>
      */
     public init(_ messageJSON: JSON) throws
     {
@@ -70,6 +74,11 @@ extension LSP.Message
         }
     }
     
+    /**
+     Create a valid LSP JSON of the message
+     
+     See <https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#contentPart>
+     */
     public func json() -> JSON
     {
         .object(["jsonrpc": JSON.string("2.0")] + caseJSONDictionary())

@@ -1,15 +1,29 @@
 public extension LSP
 {
     /**
-     https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocumentItem
+     An LSP-conform language identifier created from a language name
+     
+     See [the corresponding specification](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocumentItem)
      */
     struct LanguageIdentifier
     {
+        /**
+         Create an LSP-conform language identifier from a language name
+         
+         See [the corresponding specification](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocumentItem)
+         
+         - Parameter languageName: The (more casual) name of the language
+         */
         public init(languageName: String)
         {
             string = Self.string(forLanguageName: languageName)
         }
         
+        /**
+         `String` representation of an LSP language identifier
+         
+         See [the corresponding specification](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocumentItem)
+         */
         public let string: String
         
         private static func string(forLanguageName languageName: String) -> String
