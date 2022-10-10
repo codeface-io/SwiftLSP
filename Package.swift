@@ -1,4 +1,4 @@
-// swift-tools-version:5.3
+// swift-tools-version:5.6
 
 import PackageDescription
 
@@ -13,11 +13,11 @@ let package = Package(
     dependencies: [
         .package(
             url: "https://github.com/flowtoolz/FoundationToolz.git",
-            .branch("master")
+            exact: "0.1.0"
         ),
         .package(
             url: "https://github.com/flowtoolz/SwiftyToolz.git",
-            .branch("master")
+            exact: "0.1.0"
         )
     ],
     targets: [
