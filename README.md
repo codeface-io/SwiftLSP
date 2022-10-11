@@ -93,7 +93,8 @@ Beyond what the examples above have touched, SwiftLSP also helps with:
 
 Some context and essential types:
 
-![architecture](Documentation/architecture.jpg)
+![architecture](Documentation/architecture_dark.png#gh-dark-mode-only)
+![architecture](Documentation/architecture_light.png#gh-light-mode-only)
 
 Internal architecture (composition and essential dependencies) of the top-level source folder:
 
