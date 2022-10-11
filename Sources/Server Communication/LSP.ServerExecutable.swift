@@ -1,3 +1,5 @@
+#if os(macOS)
+
 import FoundationToolz
 import SwiftyToolz
 
@@ -29,3 +31,5 @@ public extension LSP {
         private let packetDetector: LSP.PacketDetector
     }
 }
+
+#endif

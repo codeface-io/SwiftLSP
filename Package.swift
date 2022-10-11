@@ -4,7 +4,7 @@ import PackageDescription
 
 let package = Package(
     name: "SwiftLSP",
-    platforms: [.iOS(.v11), .tvOS(.v11), .macOS(.v10_15)],
+    platforms: [.iOS(.v13), .tvOS(.v13), .macOS(.v10_15), .watchOS(.v6)],
     products: [
         .library(
             name: "SwiftLSP",
@@ -13,11 +13,11 @@ let package = Package(
     dependencies: [
         .package(
             url: "https://github.com/flowtoolz/FoundationToolz.git",
-            exact: "0.1.0"
+            exact: "0.1.1"
         ),
         .package(
             url: "https://github.com/flowtoolz/SwiftyToolz.git",
-            exact: "0.1.0"
+            exact: "0.1.1"
         )
     ],
     targets: [

@@ -100,7 +100,7 @@ Internal architecture (composition and essential dependencies) of the top-level 
 
 ![](Documentation/SwiftLSP.png)
 
-The above image was generated with the [codeface app](https://codeface.io).
+The above image was generated with [Codeface](https://codeface.io).
 
 ## Development Status
 
