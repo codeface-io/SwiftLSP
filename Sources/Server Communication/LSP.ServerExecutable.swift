@@ -32,4 +32,12 @@ public extension LSP {
     }
 }
 
+public extension Executable.Configuration
+{
+    static var sourceKitLSP: Executable.Configuration
+    {
+        .init(path: "/usr/bin/xcrun", arguments: ["sourcekit-lsp"])
+    }
+}
+
 #endif
