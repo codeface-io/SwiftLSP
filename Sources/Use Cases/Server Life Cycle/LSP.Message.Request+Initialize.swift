@@ -6,9 +6,11 @@ public extension LSP.Message.Request
 {
     /**
      https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#initialize
+     
+     - Parameter clientProcessID: [We assume](https://github.com/ChimeHQ/ProcessService/pull/3) this is the process ID of the actual LSP **client**, which is not necessarily the same process as the server's parent process that technically launched the LSP server. This is important because the LSP client might interact with the LSP server via intermediate processes like [LSPService](https://github.com/codeface-io/LSPService) or XPC services. You may omit this parameter and SwiftLSP will use the current process's ID. This will virtually always be correct since the LSP client typically creates the initialize request.
      */
     static func initialize(folder: URL,
-                           clientProcessID: Int,
+                           clientProcessID: Int = Int(ProcessInfo.processInfo.processIdentifier),
                            capabilities: JSON = defaultClientCapabilities) -> Self
     {
         .init(method: "initialize",
