@@ -23,6 +23,7 @@ extension LSP.ServerCommunicationHandler
 
 extension LSP
 {
+    // TODO: should this be named client??? ... the client sends request via its server connection to the server ...
     public typealias Server = ServerCommunicationHandler
     
     /// An actor for easy communication with an LSP server via an ``LSPServerConnection``
