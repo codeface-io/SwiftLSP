@@ -13,7 +13,7 @@ extension LSP
      
      See <https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#abstractMessage>
      */
-    public enum Message: Equatable
+    public enum Message: Equatable, Sendable
     {
         case response(Response)
         case request(Request)
@@ -26,7 +26,7 @@ extension LSP
          
          See <https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#responseMessage>
          */
-        public struct Response: Equatable
+        public struct Response: Equatable, Sendable
         {
             public init(id: NullableID, result: Result<JSON, ErrorResult>)
             {
@@ -50,7 +50,7 @@ extension LSP
         }
         
         /// An LSP message ID that can also be null
-        public enum NullableID: Equatable
+        public enum NullableID: Equatable, Sendable
         {
             case value(ID), null
         }
@@ -60,7 +60,7 @@ extension LSP
          
          See <https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#requestMessage>
          */
-        public struct Request: Equatable
+        public struct Request: Equatable, Sendable
         {
             public init(id: ID = ID(), method: String, params: JSON.Container?)
             {
@@ -75,7 +75,7 @@ extension LSP
         }
         
         /// A basic LSP message ID is either a string or an integer
-        public enum ID: Hashable
+        public enum ID: Hashable, Sendable
         {
             public init() { self = .string(UUID().uuidString) }
             
@@ -87,7 +87,7 @@ extension LSP
          
          See <https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#notificationMessage>
          */
-        public struct Notification: Equatable
+        public struct Notification: Equatable, Sendable
         {
             public init(method: String, params: JSON.Container?)
             {

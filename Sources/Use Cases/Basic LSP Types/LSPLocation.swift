@@ -1,7 +1,7 @@
 /**
  https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#location
  */
-public struct LSPLocation: Codable, Equatable
+public struct LSPLocation: Codable, Equatable, Sendable
 {
     public let uri: LSPDocumentUri
     public let range: LSPRange
@@ -33,7 +33,7 @@ public extension LSPRange
     }
 }
 
-public struct LSPRange: Codable, Equatable
+public struct LSPRange: Codable, Equatable, Sendable
 {
     /**
      * The range's start position.
@@ -46,7 +46,7 @@ public struct LSPRange: Codable, Equatable
     public let end: LSPPosition
 }
 
-public struct LSPPosition: Codable, Equatable
+public struct LSPPosition: Codable, Equatable, Sendable
 {
     /**
      * Line position in a document (zero-based).

@@ -8,7 +8,7 @@ public extension LSP
      
      See how [the LSP specifies its "Base Protocol"](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#baseProtocol).
      */
-    struct Packet: Equatable
+    struct Packet: Equatable, Sendable
     {
         /**
          Detects a ``LSP/Packet`` that starts at the beginning of a `Data` instance

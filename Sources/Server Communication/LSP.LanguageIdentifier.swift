@@ -5,7 +5,7 @@ public extension LSP
      
      See [the corresponding specification](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocumentItem)
      */
-    struct LanguageIdentifier
+    struct LanguageIdentifier: Sendable
     {
         /**
          Create an LSP-conform language identifier from a language name
