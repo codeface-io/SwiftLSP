@@ -39,13 +39,13 @@ public extension LSPDocumentSymbol.SymbolKind
 /**
  https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#documentSymbol
  */
-public struct LSPDocumentSymbol: Codable, Equatable
+public struct LSPDocumentSymbol: Codable, Equatable, Sendable
 {
     public let name: String
     
     public var decodedKind: SymbolKind? { .init(rawValue: kind) }
     
-    public enum SymbolKind: Int, CaseIterable, Codable, Equatable
+    public enum SymbolKind: Int, CaseIterable, Codable, Equatable, Sendable
     {
         case File = 1
         case Module = 2
