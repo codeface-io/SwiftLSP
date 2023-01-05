@@ -117,18 +117,18 @@ extension LSP
                 
                 Task
                 {
-                    [weak self] in await self?.save(continuation, for: request.id)
+                    await self.save(continuation, for: request.id)
+                    
+                    do
+                    {
+                        try await connection.sendToServer(.request(request))
+                    }
+                    catch
+                    {
+                        await removeContinuation(for: request.id)
+                        continuation.resume(throwing: error)
+                    }
                 }
-            }
-            
-            do
-            {
-                try await connection.sendToServer(.request(request))
-            }
-            catch
-            {
-                removeContinuation(for: request.id)
-                throw error
             }
             
             return try await json
