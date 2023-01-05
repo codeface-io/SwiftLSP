@@ -111,13 +111,13 @@ extension LSP
          */
         public func request(_ request: Request) async throws -> JSON
         {
-            async let json: JSON = withCheckedThrowingContinuation
+            try await withCheckedThrowingContinuation
             {
                 continuation in
                 
                 Task
                 {
-                    await self.save(continuation, for: request.id)
+                    save(continuation, for: request.id)
                     
                     do
                     {
@@ -125,13 +125,11 @@ extension LSP
                     }
                     catch
                     {
-                        await removeContinuation(for: request.id)
+                        removeContinuation(for: request.id)
                         continuation.resume(throwing: error)
                     }
                 }
             }
-            
-            return try await json
         }
         
         private func serverDidSend(_ response: Response) async
