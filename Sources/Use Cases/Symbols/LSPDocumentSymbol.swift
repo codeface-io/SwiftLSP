@@ -41,6 +41,19 @@ public extension LSPDocumentSymbol.SymbolKind
  */
 public struct LSPDocumentSymbol: Codable, Equatable, Sendable
 {
+    public init(name: String,
+                kind: Int,
+                range: LSPRange,
+                selectionRange: LSPRange,
+                children: [LSPDocumentSymbol] = [])
+    {
+        self.name = name
+        self.kind = kind
+        self.range = range
+        self.selectionRange = selectionRange
+        self.children = children
+    }
+    
     public let name: String
     
     public var decodedKind: SymbolKind? { .init(rawValue: kind) }

@@ -35,6 +35,12 @@ public extension LSPRange
 
 public struct LSPRange: Codable, Equatable, Sendable
 {
+    public init(start: LSPPosition, end: LSPPosition)
+    {
+        self.start = start
+        self.end = end
+    }
+    
     /**
      * The range's start position.
      */
@@ -48,6 +54,12 @@ public struct LSPRange: Codable, Equatable, Sendable
 
 public struct LSPPosition: Codable, Equatable, Sendable
 {
+    public init(line: Int, character: Int)
+    {
+        self.line = line
+        self.character = character
+    }
+    
     /**
      * Line position in a document (zero-based).
      */
