@@ -13,11 +13,11 @@ let package = Package(
     dependencies: [
         .package(
             url: "https://github.com/flowtoolz/FoundationToolz.git",
-            exact: "0.1.7"
+            exact: "0.2.0"
         ),
         .package(
             url: "https://github.com/flowtoolz/SwiftyToolz.git",
-            exact: "0.3.0"
+            exact: "0.4.0"
         )
     ],
     targets: [
