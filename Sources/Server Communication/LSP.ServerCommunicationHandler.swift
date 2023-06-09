@@ -17,7 +17,22 @@ extension LSP.ServerCommunicationHandler
      */
     public func request<Value: Decodable>(_ request: LSP.Request) async throws -> Value
     {
-        try await self.request(request).decode()
+        let resultJSON = try await self.request(request)
+            
+        guard resultJSON != .null else
+        {
+            throw "Cannot interpret <null> JSON as \(Value.self). If \(Value.self) is an optional type, you must use function requestOptional(...) instead of request(...)"
+        }
+           
+        return try resultJSON.decode()
+    }
+    
+    // TODO: can we rather "overload" the plain `request(...)` func properly so it covers the optional and non-optional code without ambiguity?
+    public func requestOptional<Value: Decodable>(_ request: LSP.Request) async throws -> Value?
+    {
+        let resultJSON = try await self.request(request)
+        guard resultJSON != .null else { return nil }
+        return try resultJSON.decode()
     }
 }
 
@@ -146,7 +161,13 @@ extension LSP
                 switch response.result
                 {
                 case .success(let jsonResult):
+                    if jsonResult == .null
+                    {
+                        log(verbose: "Received valid LSP response message with result property of <null>")
+                    }
+                    
                     continuation.resume(returning: jsonResult)
+                    
                 case .failure(let errorResult):
                     // TODO: ensure clients actually try to cast thrown errors to LSP.ErrorResult
                     continuation.resume(throwing: errorResult)
