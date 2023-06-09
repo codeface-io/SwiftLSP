@@ -94,5 +94,5 @@ public struct LSPDocumentSymbol: Codable, Equatable, Sendable
     
     public let selectionRange: LSPRange
     
-    public let children: [Self]
+    public let children: [Self]?
 }
