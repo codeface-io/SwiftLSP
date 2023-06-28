@@ -11,9 +11,10 @@ let package = Package(
             targets: ["SwiftLSP"]),
     ],
     dependencies: [
+//        .package(path: "../FoundationToolz"),
         .package(
             url: "https://github.com/flowtoolz/FoundationToolz.git",
-            exact: "0.3.1"
+            exact: "0.4.0"
         ),
         .package(
             url: "https://github.com/flowtoolz/SwiftyToolz.git",
