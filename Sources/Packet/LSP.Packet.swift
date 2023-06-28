@@ -96,7 +96,7 @@ public extension LSP
                 
                 guard let separatorIndex = indexOfSeparator(in: data) else
                 {
-                    log(warning: "Data contains no header/content separator:\n\(data.utf8String!)")
+                    log(warning: "Data (\(data.count) Byte) contains no header/content separator:\n\(data.utf8String!)")
                     return nil
                 }
                 
