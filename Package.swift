@@ -14,7 +14,7 @@ let package = Package(
 //        .package(path: "../FoundationToolz"),
         .package(
             url: "https://github.com/flowtoolz/FoundationToolz.git",
-            exact: "0.4.0"
+            exact: "0.4.1"
         ),
         .package(
             url: "https://github.com/flowtoolz/SwiftyToolz.git",
