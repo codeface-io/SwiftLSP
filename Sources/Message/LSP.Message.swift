@@ -43,16 +43,16 @@ extension LSP
             
             public struct ErrorResult: Error, Equatable
             {
-                public let code: Int
-                public let message: String
-                public let data: JSON?
-
-                public init(code: Int, message: String, data: JSON?)
+                public init(code: Int, message: String, data: JSON? = nil)
                 {
                     self.code = code
                     self.message = message
                     self.data = data
                 }
+                
+                public let code: Int
+                public let message: String
+                public let data: JSON?
             }
         }
         
