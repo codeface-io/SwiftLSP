@@ -69,7 +69,7 @@ extension LSP
          */
         public struct Request: Equatable, Sendable
         {
-            public init(id: ID = ID(), method: String, params: JSON.Container?)
+            public init(id: ID = ID(), method: String, params: JSON.Container? = nil)
             {
                 self.id = id
                 self.method = method
@@ -96,7 +96,7 @@ extension LSP
          */
         public struct Notification: Equatable, Sendable
         {
-            public init(method: String, params: JSON.Container?)
+            public init(method: String, params: JSON.Container? = nil)
             {
                 self.method = method
                 self.params = params

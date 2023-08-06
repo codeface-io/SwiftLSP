@@ -1,7 +1,7 @@
-import XCTest
 @testable import SwiftLSP
 import FoundationToolz
 import SwiftyToolz
+import XCTest
 
 final class SwiftLSPTests: XCTestCase {
     
